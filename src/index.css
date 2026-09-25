@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
 
 :root {
   font-synthesis: none;
@@ -6,72 +6,98 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  /* Typography */
   --font-sans: "Inter", system-ui, -apple-system, sans-serif;
 
-  /* Foundation: Minimalist App Backgrounds */
-  --bg: #f8fafc; /* Very subtle blue-gray app background */
-  --surface: #ffffff; /* White panels and cards */
-  --ink: #0f172a; /* Deep slate for text */
-  --muted: #64748b; /* Medium slate for secondary text */
+  /* Light foundation */
+  --bg: #f5f5f4;
+  --bg-raised: #ffffff;
+  --surface: #ffffff;
+  --surface-2: #fafaf9;
+  --ink: #1c1917;
+  --ink-2: #44403c;
+  --ink-3: #78716c;
+  --ink-4: #a8a29e;
 
-  /* Brand Theme */
-  --brand-orange: #f16522; /* Primary Action */
-  --brand-orange-hover: #e05512;
-  --brand-orange-light: #fff2ed;
+  /* Primary: Warm Orange */
+  --orange: #ea580c;
+  --orange-hover: #c2410c;
+  --orange-dim: #fff7ed;
+  --orange-muted: rgba(234, 88, 12, 0.12);
 
-  --brand-blue: #2563eb; /* Active states & Trust */
-  --brand-blue-hover: #1d4ed8;
-  --brand-blue-light: #eff6ff;
+  /* Secondary: Soft Blue */
+  --blue: #2563eb;
+  --blue-dim: #eff6ff;
+  --blue-muted: rgba(37, 99, 235, 0.1);
 
-  /* Status Colors */
-  --success: #16a34a;
-  --success-light: #dcfce7;
-  --danger: #dc2626;
-  --danger-light: #fee2e2;
-  --warning: #d97706;
-  --warning-light: #fef3c7;
+  /* Semantic */
+  --green: #16a34a;
+  --green-dim: #f0fdf4;
+  --red: #dc2626;
+  --red-dim: #fef2f2;
+  --amber: #d97706;
+  --amber-dim: #fffbeb;
 
-  /* Borders & Shadows */
-  --line: #e2e8f0;
-  --line-hover: #cbd5e1;
-  --radius-large: 16px;
-  --radius-md: 8px;
+  /* Structure */
+  --border: #e7e5e4;
+  --border-hover: #d6d3d1;
+  --radius: 10px;
+  --radius-sm: 7px;
+  --radius-xs: 5px;
 
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md:
-    0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xs: 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.05);
 }
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
+*, *::before, *::after { box-sizing: border-box; }
 
 body {
   margin: 0;
-  min-width: 320px;
   min-height: 100vh;
   font-family: var(--font-sans);
   color: var(--ink);
   background: var(--bg);
 }
 
-#root {
-  min-height: 100vh;
-}
+#root { min-height: 100vh; }
+p { line-height: 1.6; }
 
-p {
-  line-height: 1.6;
-}
-button,
-input,
-textarea {
+button, input, textarea, select {
   font-family: inherit;
   color: inherit;
 }
+
 button {
   border: none;
   background: none;
+  cursor: pointer;
 }
+
+input, textarea, select {
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 9px 12px;
+  font-size: 0.875rem;
+  color: var(--ink);
+  transition: border-color 0.15s ease;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--orange);
+  box-shadow: 0 0 0 3px var(--orange-muted);
+}
+
+input::placeholder, textarea::placeholder { color: var(--ink-4); }
+
+::selection {
+  background: var(--orange);
+  color: white;
+}
+
+a {
+  color: var(--blue);
+  text-decoration: none;
+}
+a:hover { text-decoration: underline; }

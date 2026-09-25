@@ -1,0 +1,336 @@
+/* ── Dashboard Layout ── */
+.dash-root {
+  padding: 40px 48px 80px;
+  max-width: 1080px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  animation: viewIn 0.2s ease;
+}
+
+@keyframes viewIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.dash-header {
+  margin-bottom: 32px;
+}
+
+.dash-title {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--ink);
+  letter-spacing: -0.04em;
+}
+
+.dash-subtitle {
+  margin: 6px 0 0;
+  font-size: 0.9rem;
+  color: var(--ink-3);
+  font-weight: 400;
+}
+
+/* ── KPI Cards ── */
+.kpi-row {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 40px;
+}
+
+.kpi-card {
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: box-shadow 0.2s, border-color 0.2s;
+}
+
+.kpi-card:hover {
+  border-color: var(--border-hover);
+  box-shadow: var(--shadow-md);
+}
+
+.kpi-card--warn {
+  border-color: #fde68a;
+  background: #fffbeb;
+}
+
+.kpi-card--danger {
+  border-color: #fca5a5;
+  background: #fef2f2;
+}
+
+.kpi-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--ink-4);
+}
+
+.kpi-value {
+  font-size: 2.4rem;
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  color: var(--ink);
+  line-height: 1;
+}
+
+.kpi-value-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.kpi-denom {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--ink-4);
+}
+
+.kpi-progress {
+  height: 5px;
+  background: var(--border);
+  border-radius: 99px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.kpi-progress-fill {
+  height: 100%;
+  background: var(--orange);
+  border-radius: 99px;
+  transition: width 0.5s ease;
+}
+
+.kpi-pct {
+  font-size: 0.78rem;
+  color: var(--ink-3);
+  font-weight: 500;
+}
+
+.kpi-card--warn .kpi-value { color: #92400e; }
+.kpi-card--danger .kpi-value { color: #991b1b; }
+
+/* ── Two-column body ── */
+.dash-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+/* ── Panel ── */
+.dash-panel {
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.panel-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.panel-pill {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 99px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--ink-3);
+}
+
+/* ── Action Rows ── */
+.action-rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.action-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 24px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+}
+
+.action-row:last-child { border-bottom: none; }
+.action-row:hover { background: var(--surface-2); }
+
+.action-type-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.dot--orange { background: var(--orange); }
+.dot--blue   { background: var(--blue); }
+
+.action-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.action-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.action-link {
+  font-size: 0.78rem;
+  color: var(--ink-3);
+  font-weight: 400;
+  text-align: left;
+  padding: 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+.action-link:hover { color: var(--orange); }
+
+.action-done-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  background: var(--green-dim);
+  color: var(--green);
+  border: 1px solid #bbf7d0;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+.action-done-btn:hover {
+  background: var(--green);
+  color: white;
+  border-color: var(--green);
+}
+.action-done-btn svg { width: 13px; height: 13px; }
+
+/* ── Review Rows ── */
+.review-rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.review-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 24px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.review-row:last-child { border-bottom: none; }
+.review-row:hover { background: var(--surface-2); }
+
+.review-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.review-badge svg { width: 16px; height: 16px; }
+.badge--note { background: var(--orange-dim); color: var(--orange); }
+.badge--prob { background: var(--blue-dim); color: var(--blue); }
+
+.review-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.review-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.review-meta {
+  font-size: 0.78rem;
+  color: var(--ink-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.review-when {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--ink-3);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.when--today { color: var(--orange); }
+.when--late  { color: var(--red); }
+
+/* ── Panel Empty State ── */
+.panel-empty {
+  padding: 48px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.panel-empty-emoji {
+  font-size: 2rem;
+  margin-bottom: 4px;
+}
+
+.panel-empty-text {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--ink-2);
+}
+
+.panel-empty-sub {
+  font-size: 0.82rem;
+  color: var(--ink-4);
+}
+

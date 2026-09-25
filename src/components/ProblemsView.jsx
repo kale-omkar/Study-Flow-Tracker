@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useRef } from "react";
+import "./ProblemsView.css";
 import { Icons } from "../Icons";
 
 export default function ProblemsView({ problems, onImportXlsx, onUpdateStatus, onDelete }) {

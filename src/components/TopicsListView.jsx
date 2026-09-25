@@ -1,4 +1,5 @@
 import React from "react";
+import "./TopicsListView.css";
 import { Icons } from "../Icons";
 import { REVIEW_PHASES } from "../constants";
 import { addDays, diffInDays, formatDate } from "../utils";

@@ -1,4 +1,5 @@
 import React from "react";
+import "./DashboardView.css";
 import { Icons } from "../Icons";
 import { formatDate, getRelativeLabel } from "../utils";
 

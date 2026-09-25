@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "./ProblemCard.css";
 import { Icons } from "../Icons";
 import { REVIEW_PHASES, STATUS_OPTIONS } from "../constants";
 import { addDays, diffInDays, getRelativeLabel } from "../utils";

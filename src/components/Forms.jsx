@@ -1,4 +1,5 @@
 import React from "react";
+import "./Forms.css";
 import { Icons } from "../Icons";
 import { PLATFORMS, DIFFICULTY, STATUS_OPTIONS } from "../constants";
 

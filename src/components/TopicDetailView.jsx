@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useRef } from "react";
+import "./TopicDetailView.css";
 import { Icons } from "../Icons";
 import { formatDate, addDays, diffInDays, getRelativeLabel } from "../utils";
 import { REVIEW_PHASES } from "../constants";

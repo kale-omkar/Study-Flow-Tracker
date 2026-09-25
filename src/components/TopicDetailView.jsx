@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from "react";
+import React, { useState, useMemo } from "react";
 import "./TopicDetailView.css";
 import { Icons } from "../Icons";
 import { formatDate, addDays, diffInDays, getRelativeLabel } from "../utils";
@@ -24,7 +24,6 @@ export default function TopicDetailView({
 }) {
   const problems = topic.problems || [];
   const [problemFilter, setProblemFilter] = useState("all");
-  const fileInputRef = useRef(null);
 
   const filteredProblems = useMemo(() => {
     if (problemFilter === "all") return problems;

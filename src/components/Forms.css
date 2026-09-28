@@ -7,7 +7,7 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   animation: fadeIn 0.15s ease;
 }
 
@@ -53,7 +53,7 @@
   color: #111827;
   background: white;
   transition: all 0.2s ease;
-  box-shadow: inset 0 1px 2px rgba(0,0,0,0.02);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.02);
   font-family: inherit;
 }
 
@@ -68,4 +68,75 @@
   display: flex;
   gap: 12px;
   padding-top: 12px;
+}
+
+/* ═══════════════════════════════════════════════════
+   Topic form — scoped override for the new design system.
+   Only .topic-form (TopicForm, used on the Topics page) is
+   affected. ProblemForm and TopicEditForm keep the styling
+   above until their own pages are redesigned.
+   ═══════════════════════════════════════════════════ */
+.topic-form {
+  background: var(--sf-surface);
+  border: none;
+  border-radius: var(--sf-radius-md);
+  box-shadow: var(--sf-shadow);
+  padding: 22px;
+  font-family: var(--sf-font);
+  margin-bottom: 24px;
+}
+
+.topic-form .form-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--sf-ink);
+  border-bottom-color: var(--sf-border);
+  padding-bottom: 14px;
+}
+
+.topic-form .form-field span {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--sf-ink-2);
+}
+
+.topic-form .form-field input,
+.topic-form .form-field textarea {
+  border: 1px solid var(--sf-border-strong);
+  border-radius: var(--sf-radius-sm);
+  font-family: var(--sf-font);
+  color: var(--sf-ink);
+  box-shadow: none;
+}
+
+.topic-form .form-field input:focus,
+.topic-form .form-field textarea:focus {
+  border-color: var(--sf-green-500);
+  box-shadow: 0 0 0 3px var(--sf-green-100);
+}
+
+.topic-form .btn-primary {
+  background: var(--sf-green-700);
+  border: none;
+  border-radius: var(--sf-radius-sm);
+  font-family: var(--sf-font);
+  font-weight: 700;
+}
+
+.topic-form .btn-primary:hover {
+  background: var(--sf-green-800);
+}
+
+.topic-form .btn-ghost {
+  border-radius: var(--sf-radius-sm);
+  font-family: var(--sf-font);
+  font-weight: 600;
+  color: var(--sf-ink-3);
+  border-color: var(--sf-border-strong);
+}
+
+.topic-form .btn-ghost:hover {
+  color: var(--sf-ink);
+  background: var(--sf-surface-sunken);
+  border-color: var(--sf-border-strong);
 }

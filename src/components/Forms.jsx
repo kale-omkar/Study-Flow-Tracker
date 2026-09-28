@@ -14,7 +14,7 @@ export function TopicForm({ onSubmit, onCancel, today }) {
 
   return (
     <form
-      className="form-card"
+      className="form-card topic-form"
       onSubmit={(e) => {
         e.preventDefault();
         if (!form.title.trim()) return;

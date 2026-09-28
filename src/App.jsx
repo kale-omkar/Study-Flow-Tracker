@@ -6,24 +6,24 @@ import { loadData, createId, getTodayString, addDays, diffInDays } from "./utils
 import { parseXlsx } from "./xlsxParser";
 import { Icons } from "./Icons";
 
-import DashboardView     from "./components/DashboardView";
-import TopicsListView    from "./components/TopicsListView";
-import TopicDetailView   from "./components/TopicDetailView";
-import ProblemsView      from "./components/ProblemsView";
+import DashboardView from "./components/DashboardView";
+import TopicsListView from "./components/TopicsListView";
+import TopicDetailView from "./components/TopicDetailView";
+import ProblemsView from "./components/ProblemsView";
 
 // ──────────────────────────────────────────────────
 //  App — state, handlers, routing, sidebar only
 // ──────────────────────────────────────────────────
 export default function App() {
-  const [data, setData]                   = useState(loadData);
-  const [activeView, setActiveView]       = useState("dashboard");
+  const [data, setData] = useState(loadData);
+  const [activeView, setActiveView] = useState("dashboard");
   const [selectedTopicId, setSelectedTopicId] = useState(null);
   const [showTopicForm, setShowTopicForm] = useState(false);
   const [showProblemForm, setShowProblemForm] = useState(false);
-  const [editingTopic, setEditingTopic]   = useState(null);
+  const [editingTopic, setEditingTopic] = useState(null);
 
-  const today    = getTodayString();
-  const topics   = data.topics   || [];
+  const today = getTodayString();
+  const topics = data.topics || [];
   const problems = data.problems || [];
 
   // Persist
@@ -103,7 +103,7 @@ export default function App() {
         if (i > 0 && !topic.notePhases[REVIEW_PHASES[i - 1].key]) return;
         const due = addDays(topic.startDate, phase.offset);
         const d = diffInDays(today, due);
-        if (d < 0)  overdueCount++;
+        if (d < 0) overdueCount++;
         if (d === 0) reviewsDueToday++;
       });
     });
@@ -290,12 +290,13 @@ export default function App() {
       <nav className="sidebar" role="navigation">
         <div className="sidebar-brand">
           <div className="brand-icon">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="20 6 9 17 4 12"/>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="20 6 9 17 4 12" />
             </svg>
           </div>
           <div>
             <h1 className="brand-title">Study Flow</h1>
+            <span className="brand-tag">Interview prep</span>
           </div>
         </div>
 

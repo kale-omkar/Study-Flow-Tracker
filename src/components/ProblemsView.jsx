@@ -33,16 +33,16 @@ export default function ProblemsView({ problems, onImportXlsx, onUpdateStatus, o
   }, [problems, search, diffFilter, platformFilter, topicFilter, statusTab]);
 
   const counts = useMemo(() => ({
-    all:          problems.length,
-    unsolved:     problems.filter((p) => p.status === "unsolved").length,
-    attempted:    problems.filter((p) => p.status === "attempted").length,
-    solved:       problems.filter((p) => p.status === "solved").length,
-    easy:         problems.filter((p) => p.difficulty === "Easy").length,
-    medium:       problems.filter((p) => p.difficulty === "Medium").length,
-    hard:         problems.filter((p) => p.difficulty === "Hard").length,
-    easySolved:   problems.filter((p) => p.difficulty === "Easy"   && p.status === "solved").length,
+    all: problems.length,
+    unsolved: problems.filter((p) => p.status === "unsolved").length,
+    attempted: problems.filter((p) => p.status === "attempted").length,
+    solved: problems.filter((p) => p.status === "solved").length,
+    easy: problems.filter((p) => p.difficulty === "Easy").length,
+    medium: problems.filter((p) => p.difficulty === "Medium").length,
+    hard: problems.filter((p) => p.difficulty === "Hard").length,
+    easySolved: problems.filter((p) => p.difficulty === "Easy" && p.status === "solved").length,
     mediumSolved: problems.filter((p) => p.difficulty === "Medium" && p.status === "solved").length,
-    hardSolved:   problems.filter((p) => p.difficulty === "Hard"   && p.status === "solved").length,
+    hardSolved: problems.filter((p) => p.difficulty === "Hard" && p.status === "solved").length,
   }), [problems]);
 
   const cycleStatus = (p) => {
@@ -52,14 +52,14 @@ export default function ProblemsView({ problems, onImportXlsx, onUpdateStatus, o
   };
 
   return (
-    <div className="view-content prob-view">
+    <div className="problems-view">
       {/* ── Header ── */}
-      <div className="prob-view-header">
+      <div className="problems-head">
         <div>
-          <h2 className="view-title">Problems</h2>
-          <p className="view-subtitle">{counts.all} problems imported</p>
+          <h2 className="problems-title">Problems</h2>
+          <p className="problems-subtitle">{counts.all} problems imported</p>
         </div>
-        <button className="btn-import" onClick={() => fileInputRef.current?.click()}>
+        <button className="problems-import-btn" onClick={() => fileInputRef.current?.click()}>
           {Icons.upload}
           <span>Import XLSX</span>
         </button>
@@ -77,41 +77,47 @@ export default function ProblemsView({ problems, onImportXlsx, onUpdateStatus, o
 
       {/* ── Stats Row ── */}
       {counts.all > 0 && (
-        <div className="prob-stats-row">
-          <div className="prob-stat-pill diff-easy-pill">
-            <span className="psp-label">Easy</span>
-            <span className="psp-value">{counts.easySolved}/{counts.easy}</span>
+        <div className="problems-stats">
+          <div className="problems-stat problems-stat--easy">
+            <span className="problems-stat-label">Easy</span>
+            <span className="problems-stat-value">{counts.easySolved}<span className="problems-stat-denom">/{counts.easy}</span></span>
           </div>
-          <div className="prob-stat-pill diff-medium-pill">
-            <span className="psp-label">Medium</span>
-            <span className="psp-value">{counts.mediumSolved}/{counts.medium}</span>
+          <div className="problems-stat problems-stat--medium">
+            <span className="problems-stat-label">Medium</span>
+            <span className="problems-stat-value">{counts.mediumSolved}<span className="problems-stat-denom">/{counts.medium}</span></span>
           </div>
-          <div className="prob-stat-pill diff-hard-pill">
-            <span className="psp-label">Hard</span>
-            <span className="psp-value">{counts.hardSolved}/{counts.hard}</span>
+          <div className="problems-stat problems-stat--hard">
+            <span className="problems-stat-label">Hard</span>
+            <span className="problems-stat-value">{counts.hardSolved}<span className="problems-stat-denom">/{counts.hard}</span></span>
           </div>
-          <div className="prob-stat-pill total-pill">
-            <span className="psp-label">Solved</span>
-            <span className="psp-value">{counts.solved}/{counts.all}</span>
+          <div className="problems-stat">
+            <span className="problems-stat-label">Solved</span>
+            <span className="problems-stat-value">{counts.solved}<span className="problems-stat-denom">/{counts.all}</span></span>
           </div>
         </div>
       )}
 
       {/* ── Controls ── */}
-      <div className="prob-controls">
-        <div className="prob-search-wrap">
-          <svg className="prob-search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-          </svg>
+      <div className="problems-controls">
+        <div className="problems-search-wrap">
+          <span className="problems-search-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+          </span>
           <input
-            className="prob-search-input"
+            className="problems-search-input"
             placeholder="Search by name…"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
-          {search && <button className="prob-search-clear" onClick={() => setSearch("")}>✕</button>}
+          {search && (
+            <button className="problems-search-clear" onClick={() => setSearch("")} title="Clear search">
+              ×
+            </button>
+          )}
         </div>
-        <div className="prob-filter-group">
+        <div className="problems-filter-group">
           <div className="diff-pills">
             {["all", "Easy", "Medium", "Hard"].map((d) => (
               <button
@@ -124,14 +130,14 @@ export default function ProblemsView({ problems, onImportXlsx, onUpdateStatus, o
             ))}
           </div>
           {platforms.length > 0 && (
-            <select className="prob-filter-select" value={platformFilter} onChange={(e) => setPlatformFilter(e.target.value)}>
-              <option value="all">All Platforms</option>
+            <select className="problems-filter-select" value={platformFilter} onChange={(e) => setPlatformFilter(e.target.value)}>
+              <option value="all">All platforms</option>
               {platforms.map((pl) => <option key={pl} value={pl}>{pl}</option>)}
             </select>
           )}
           {topics.length > 0 && (
-            <select className="prob-filter-select" value={topicFilter} onChange={(e) => setTopicFilter(e.target.value)}>
-              <option value="all">All Topics</option>
+            <select className="problems-filter-select" value={topicFilter} onChange={(e) => setTopicFilter(e.target.value)}>
+              <option value="all">All topics</option>
               {topics.map((t) => <option key={t} value={t}>{t}</option>)}
             </select>
           )}
@@ -139,12 +145,12 @@ export default function ProblemsView({ problems, onImportXlsx, onUpdateStatus, o
       </div>
 
       {/* ── Status Tabs ── */}
-      <div className="prob-status-tabs">
+      <div className="problems-tabs">
         {[
-          { key: "all",       label: "All",       count: counts.all },
-          { key: "unsolved",  label: "Unsolved",  count: counts.unsolved },
+          { key: "all", label: "All", count: counts.all },
+          { key: "unsolved", label: "Unsolved", count: counts.unsolved },
           { key: "attempted", label: "Attempted", count: counts.attempted },
-          { key: "solved",    label: "Solved",    count: counts.solved },
+          { key: "solved", label: "Solved", count: counts.solved },
         ].map((tab) => (
           <button
             key={tab.key}
@@ -156,14 +162,14 @@ export default function ProblemsView({ problems, onImportXlsx, onUpdateStatus, o
           </button>
         ))}
         {filtered.length !== counts.all && (
-          <span className="prob-filter-hint">{filtered.length} shown</span>
+          <span className="problems-filter-hint">{filtered.length} shown</span>
         )}
       </div>
 
-      {/* ── Table ── */}
+      {/* ── List ── */}
       {filtered.length > 0 ? (
-        <div className="prob-list-wrap">
-          <div className="prob-list-head">
+        <div className="problems-list-wrap">
+          <div className="problems-list-head">
             <span className="plh-num">#</span>
             <span className="plh-name">Problem</span>
             <span className="plh-topic">Topic</span>
@@ -176,25 +182,25 @@ export default function ProblemsView({ problems, onImportXlsx, onUpdateStatus, o
             const diffClass = p.difficulty === "Easy" ? "d-easy" : p.difficulty === "Hard" ? "d-hard" : "d-medium";
             const statusNext = { unsolved: "attempted", attempted: "solved", solved: "unsolved" }[p.status];
             return (
-              <div key={p.id} className={`prob-list-row prow-${p.status}`}>
+              <div key={p.id} className={`problems-list-row prow-${p.status}`}>
                 <span className="plr-num">{idx + 1}</span>
                 <span className="plr-name">
                   <span className="plr-name-text" title={p.name}>{p.name}</span>
                   {p.link && (
                     <a href={p.link} target="_blank" rel="noopener noreferrer" className="plr-link" onClick={(e) => e.stopPropagation()} title="Open problem">
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-                        <polyline points="15 3 21 3 21 9"/>
-                        <line x1="10" y1="14" x2="21" y2="3"/>
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                        <polyline points="15 3 21 3 21 9" />
+                        <line x1="10" y1="14" x2="21" y2="3" />
                       </svg>
                     </a>
                   )}
                 </span>
                 <span className="plr-topic" title={p.topic}>{p.topic || "—"}</span>
-                <span className={`plr-platform plat-${(p.platform || "other").toLowerCase().replace(/[^a-z]/g, "")}`}>{p.platform}</span>
+                <span className="plr-platform">{p.platform || "—"}</span>
                 <span className={`plr-diff ${diffClass}`}>{p.difficulty}</span>
                 <button className={`plr-status pstatus-${p.status}`} onClick={() => cycleStatus(p)} title={`Click to mark as ${statusNext}`}>
-                  {p.status === "solved" ? "✓ Solved" : p.status === "attempted" ? "◐ Attempted" : "○ Unsolved"}
+                  {p.status === "solved" ? "Solved" : p.status === "attempted" ? "Attempted" : "Unsolved"}
                 </button>
                 <button className="plr-del" onClick={() => onDelete(p.id)} title="Remove">
                   {Icons.trash}
@@ -204,23 +210,26 @@ export default function ProblemsView({ problems, onImportXlsx, onUpdateStatus, o
           })}
         </div>
       ) : counts.all === 0 ? (
-        <div className="prob-empty">
-          <div className="prob-empty-icon">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+        <div className="problems-empty">
+          <div className="problems-empty-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" />
             </svg>
           </div>
           <h3>No problems yet</h3>
-          <p>Import your .xlsx file to populate this list</p>
-          <button className="btn-primary" onClick={() => fileInputRef.current?.click()}>
+          <p>Import your .xlsx file to populate this list.</p>
+          <button className="problems-import-btn" onClick={() => fileInputRef.current?.click()}>
             {Icons.upload} Import XLSX
           </button>
         </div>
       ) : (
-        <div className="prob-empty">
+        <div className="problems-empty">
           <h3>No results</h3>
-          <p>Try clearing some filters</p>
-          <button className="btn-ghost" onClick={() => { setSearch(""); setDiffFilter("all"); setPlatformFilter("all"); setTopicFilter("all"); setStatusTab("all"); }}>
+          <p>Try clearing some filters.</p>
+          <button
+            className="problems-clear-btn"
+            onClick={() => { setSearch(""); setDiffFilter("all"); setPlatformFilter("all"); setTopicFilter("all"); setStatusTab("all"); }}
+          >
             Clear all filters
           </button>
         </div>

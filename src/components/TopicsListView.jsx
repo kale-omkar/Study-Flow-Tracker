@@ -15,14 +15,14 @@ export default function TopicsListView({
   onSelectTopic,
 }) {
   return (
-    <div className="view-content">
-      <header className="view-header">
+    <div className="topics-view">
+      <header className="topics-head">
         <div>
-          <h2 className="view-title">Topics</h2>
-          <p className="view-subtitle">Your study topics with notes and practice problems</p>
+          <h2 className="topics-title">Topics</h2>
+          <p className="topics-subtitle">Your study topics with notes and practice problems</p>
         </div>
-        <button className="btn-primary" onClick={() => onShowForm(!showForm)}>
-          {Icons.plus} New Topic
+        <button className="topics-add-btn" onClick={() => onShowForm(!showForm)}>
+          {Icons.plus} New topic
         </button>
       </header>
 
@@ -49,10 +49,10 @@ export default function TopicsListView({
               if (nextPhase) {
                 const due = addDays(topic.startDate, nextPhase.offset);
                 const d = diffInDays(today, due);
-                if (d < 0)      noteStatus = { text: `${Math.abs(d)}d overdue`, kind: "overdue" };
+                if (d < 0) noteStatus = { text: `${Math.abs(d)}d overdue`, kind: "overdue" };
                 else if (d === 0) noteStatus = { text: "Due today", kind: "due" };
-                else if (d <= 2)  noteStatus = { text: `Due in ${d}d`, kind: "soon" };
-                else              noteStatus = { text: `In ${d}d`, kind: "ontrack" };
+                else if (d <= 2) noteStatus = { text: `Due in ${d}d`, kind: "soon" };
+                else noteStatus = { text: `In ${d}d`, kind: "ontrack" };
               }
             } else {
               noteStatus = { text: "Mastered", kind: "complete" };
@@ -74,50 +74,45 @@ export default function TopicsListView({
                 </div>
                 <p className="topic-card-meta">{Icons.clock} Started {formatDate(topic.startDate)}</p>
                 {topic.notes && (
-                  <div className="topic-card-notes-wrapper">
-                    <p className="topic-card-notes">
-                      {topic.notes.length > 80 ? topic.notes.slice(0, 80) + "…" : topic.notes}
-                    </p>
-                  </div>
+                  <p className="topic-card-notes">
+                    {topic.notes.length > 80 ? topic.notes.slice(0, 80) + "…" : topic.notes}
+                  </p>
                 )}
 
-                <div className="topic-card-stats-grid">
-                  <div className="topic-card-stat-box">
-                    <span className="stat-box-label">{Icons.book} Notes Review</span>
-                    <span className="stat-box-value">{progress}%</span>
+                <div className="topic-card-stats">
+                  <div className="topic-stat">
+                    <span className="topic-stat-label">{Icons.book} Notes review</span>
+                    <span className="topic-stat-value">{progress}%</span>
                   </div>
-                  <div className="topic-card-stat-box">
-                    <span className="stat-box-label">{Icons.code} Problems</span>
-                    <span className="stat-box-value">
-                      {solvedCount}
-                      <span style={{ fontSize: "0.75rem", color: "#9ca3af" }}>/{problemCount}</span>
+                  <div className="topic-stat">
+                    <span className="topic-stat-label">{Icons.code} Problems</span>
+                    <span className="topic-stat-value">
+                      {solvedCount}<span className="topic-stat-denom">/{problemCount}</span>
                     </span>
                   </div>
                 </div>
 
-                <div className="progress-bar">
-                  <div className="progress-bar-fill" style={{ width: `${progress}%` }} />
+                <div className="topic-progress-track">
+                  <div className="topic-progress-fill" style={{ width: `${progress}%` }} />
                 </div>
 
-                <div className="topic-card-actions" onClick={(e) => e.stopPropagation()}>
-                  <button
-                    className="btn-icon btn-icon-danger"
-                    onClick={() => onDeleteTopic(topic.id)}
-                    title="Delete topic"
-                  >
-                    {Icons.trash}
-                  </button>
-                </div>
+                <button
+                  className="topic-delete-btn"
+                  onClick={(e) => { e.stopPropagation(); onDeleteTopic(topic.id); }}
+                  title="Delete topic"
+                >
+                  {Icons.trash}
+                </button>
               </article>
             );
           })
         ) : (
-          <div className="empty-state wide">
-            <div className="empty-icon">📚</div>
+          <div className="topics-empty">
+            <span className="topics-empty-icon">{Icons.book}</span>
             <h3>No topics yet</h3>
-            <p>Create your first study topic to get started with the Notes → Practice → Review workflow.</p>
-            <button className="btn-primary" onClick={() => onShowForm(true)}>
-              {Icons.plus} Create Topic
+            <p>Create your first study topic to get started with the notes → practice → review workflow.</p>
+            <button className="topics-add-btn" onClick={() => onShowForm(true)}>
+              {Icons.plus} Create topic
             </button>
           </div>
         )}

@@ -1,4 +1,5 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap");
 
 :root {
   font-synthesis: none;
@@ -44,12 +45,63 @@
   --radius-sm: 7px;
   --radius-xs: 5px;
 
-  --shadow-xs: 0 1px 2px rgba(0,0,0,0.04);
-  --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
-  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.05);
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
 }
 
-*, *::before, *::after { box-sizing: border-box; }
+/* ═══════════════════════════════════════════════════
+   New design system — rolling out one page at a time.
+   Tokens are prefixed --sf- so they can't collide with,
+   or silently restyle, pages that haven't been redone yet.
+   Once every view is migrated, these can be promoted to
+   the tokens above and this block removed.
+
+   v2 — warm rework. First pass leaned dark/technical
+   (ink sidebar, indigo accent, mono numerals) and it
+   read as cold rather than premium, so this drops the
+   dark chrome and the mono face for one warm, rounded
+   family and a living green instead of muted indigo.
+   ═══════════════════════════════════════════════════ */
+:root {
+  --sf-font: "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+
+  --sf-ink: #201a14;
+  --sf-ink-2: #55493d;
+  --sf-ink-3: #7c6f61;
+  --sf-ink-4: #ab9f8f;
+
+  --sf-paper: #fcfaf6;
+  --sf-surface: #ffffff;
+  --sf-surface-sunken: #f1ede5;
+
+  --sf-border: #e8e2d5;
+  --sf-border-strong: #d8cfbc;
+
+  --sf-green-800: #1c4a34;
+  --sf-green-700: #157a40;
+  --sf-green-500: #1fad61;
+  --sf-green-100: #e6f5ec;
+
+  --sf-gold-700: #97640d;
+  --sf-gold-400: #e2a039;
+  --sf-gold-100: #fbf0da;
+
+  --sf-coral-700: #cb4b34;
+  --sf-coral-400: #e15a45;
+  --sf-coral-100: #fce9e5;
+
+  --sf-radius-sm: 10px;
+  --sf-radius-md: 16px;
+
+  --sf-shadow: 0 1px 2px rgba(32, 26, 20, 0.04), 0 8px 20px -8px rgba(32, 26, 20, 0.12);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 
 body {
   margin: 0;
@@ -59,10 +111,18 @@ body {
   background: var(--bg);
 }
 
-#root { min-height: 100vh; }
-p { line-height: 1.6; }
+#root {
+  min-height: 100vh;
+}
 
-button, input, textarea, select {
+p {
+  line-height: 1.6;
+}
+
+button,
+input,
+textarea,
+select {
   font-family: inherit;
   color: inherit;
 }
@@ -73,7 +133,9 @@ button {
   cursor: pointer;
 }
 
-input, textarea, select {
+input,
+textarea,
+select {
   background: var(--bg-raised);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
@@ -83,13 +145,18 @@ input, textarea, select {
   transition: border-color 0.15s ease;
 }
 
-input:focus, textarea:focus, select:focus {
+input:focus,
+textarea:focus,
+select:focus {
   outline: none;
   border-color: var(--orange);
   box-shadow: 0 0 0 3px var(--orange-muted);
 }
 
-input::placeholder, textarea::placeholder { color: var(--ink-4); }
+input::placeholder,
+textarea::placeholder {
+  color: var(--ink-4);
+}
 
 ::selection {
   background: var(--orange);
@@ -100,4 +167,7 @@ a {
   color: var(--blue);
   text-decoration: none;
 }
-a:hover { text-decoration: underline; }
+
+a:hover {
+  text-decoration: underline;
+}

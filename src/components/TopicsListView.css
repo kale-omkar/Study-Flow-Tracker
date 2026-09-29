@@ -107,6 +107,10 @@
   align-items: flex-start;
   gap: 12px;
   margin-bottom: 8px;
+  /* the delete button sits absolutely at top-right (16px + 30px wide);
+     reserve that space here so the pill is never covered by it,
+     whether or not the button is currently visible */
+  padding-right: 34px;
 }
 
 .topic-card-title {
@@ -249,7 +253,6 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  opacity: 0;
   transition: opacity 0.15s ease, background 0.15s ease, color 0.15s ease;
 }
 
@@ -258,13 +261,21 @@
   height: 14px;
 }
 
-.topic-card:hover .topic-delete-btn {
-  opacity: 1;
-}
-
 .topic-delete-btn:hover {
   background: var(--sf-coral-100);
   color: var(--sf-coral-700);
+}
+
+/* Hide-until-hover is a mouse affordance; on touch there's no hover
+   before the tap, so it would make the button unreachable. */
+@media (hover: hover) and (pointer: fine) {
+  .topic-delete-btn {
+    opacity: 0;
+  }
+
+  .topic-card:hover .topic-delete-btn {
+    opacity: 1;
+  }
 }
 
 /* ── Empty state ── */

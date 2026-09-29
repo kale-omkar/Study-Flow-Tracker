@@ -4,6 +4,14 @@ import { Icons } from "../Icons";
 import { REVIEW_PHASES, STATUS_OPTIONS } from "../constants";
 import { addDays, diffInDays, getRelativeLabel } from "../utils";
 
+// Status glyphs are drawn here (rather than taken from STATUS_OPTIONS) so
+// they always match the icon set, whatever the constants file contains.
+const STATUS_ICONS = {
+  unsolved: Icons.circle,
+  attempted: Icons.circleHalf,
+  solved: Icons.check,
+};
+
 export default function ProblemCard({
   problem,
   topicId,
@@ -18,22 +26,20 @@ export default function ProblemCard({
     problem.difficulty === "Easy"
       ? "diff-easy"
       : problem.difficulty === "Medium"
-      ? "diff-medium"
-      : "diff-hard";
-
-  const statusObj = STATUS_OPTIONS.find((s) => s.value === problem.status);
+        ? "diff-medium"
+        : "diff-hard";
 
   return (
     <div className={`problem-card ${expanded ? "problem-expanded" : ""}`}>
       <div className="problem-main" onClick={() => setExpanded(!expanded)}>
         <div className="problem-left">
           <span className={`problem-status-icon status-${problem.status}`}>
-            {statusObj?.icon}
+            {STATUS_ICONS[problem.status]}
           </span>
           <div className="problem-info">
             <span className="problem-name">{problem.name}</span>
             <div className="problem-tags">
-              <span className="tag tag-platform">{problem.platform}</span>
+              {problem.platform && <span className="tag tag-platform">{problem.platform}</span>}
               <span className={`tag tag-diff ${difficultyClass}`}>{problem.difficulty}</span>
             </div>
           </div>
@@ -46,6 +52,7 @@ export default function ProblemCard({
               rel="noopener noreferrer"
               className="problem-link"
               onClick={(e) => e.stopPropagation()}
+              title="Open problem"
             >
               {Icons.link}
             </a>
@@ -58,26 +65,26 @@ export default function ProblemCard({
 
       {expanded && (
         <div className="problem-details">
-          {/* Status Selector */}
+          {/* Status selector */}
           <div className="detail-row">
-            <label className="detail-label">Status</label>
+            <span className="detail-label">Status</span>
             <div className="status-selector">
               {STATUS_OPTIONS.map((s) => (
                 <button
                   key={s.value}
-                  className={`status-option ${problem.status === s.value ? "status-selected" : ""}`}
+                  className={`status-option status-option--${s.value} ${problem.status === s.value ? "status-selected" : ""}`}
                   onClick={() => onUpdateStatus(topicId, problem.id, s.value)}
                 >
-                  {s.icon} {s.label}
+                  {STATUS_ICONS[s.value]} {s.label}
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Review Phases (only if solved) */}
+          {/* Review phases (only once solved) */}
           {problem.status === "solved" && problem.reviewPhases && (
             <div className="detail-row">
-              <label className="detail-label">Review Progress (1-7-24)</label>
+              <span className="detail-label">Review progress (1-7-24)</span>
               <div className="review-phases">
                 {REVIEW_PHASES.map((phase, i) => {
                   const isDone = problem.reviewPhases[phase.key];
@@ -92,7 +99,10 @@ export default function ProblemCard({
                       onClick={() => onToggleReview(topicId, problem.id, phase.key)}
                       disabled={locked}
                     >
-                      <span>{isDone ? "✓" : phase.label}</span>
+                      <span className="review-chip-label">
+                        {isDone && Icons.check}
+                        {phase.label}
+                      </span>
                       <span className="review-chip-hint">
                         {isDone ? "Done" : locked ? "Locked" : getRelativeLabel(d)}
                       </span>
@@ -105,7 +115,7 @@ export default function ProblemCard({
 
           <div className="detail-actions">
             <button
-              className="btn-sm btn-danger"
+              className="detail-remove-btn"
               onClick={() => onDelete(topicId, problem.id)}
             >
               {Icons.trash} Remove

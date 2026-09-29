@@ -1,98 +1,129 @@
-/* ── Problems ── */
+/* ═══════════════════════════════════════════════════
+   Problem rows (topic detail) — new design system (--sf- tokens)
+
+   Rows are separated by hairlines rather than each being a
+   boxed card, since they already live inside a section card.
+   Status/tag selectors are compound (.problem-status-icon.status-*,
+   .problem-tags .tag) so they can't leak onto other pages.
+   ═══════════════════════════════════════════════════ */
+
 .problems-list {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  font-family: var(--sf-font);
 }
 
 .problem-card {
-  background: var(--bg-raised);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  overflow: hidden;
-  transition: all 0.12s;
-  box-shadow: var(--shadow-xs);
-}
-
-.problem-card:hover {
-  border-color: var(--border-hover);
+  border-top: 1px solid var(--sf-border);
+  transition: background 0.12s ease;
 }
 
 .problem-expanded {
-  box-shadow: var(--shadow-sm);
+  background: var(--sf-paper);
 }
 
 .problem-main {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 11px 14px;
+  gap: 12px;
+  padding: 14px 22px;
   cursor: pointer;
-  gap: 10px;
+  transition: background 0.12s ease;
+}
+
+.problem-card:not(.problem-expanded) .problem-main:hover {
+  background: var(--sf-paper);
 }
 
 .problem-left {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   flex: 1;
   min-width: 0;
 }
 
+/* status glyph */
 .problem-status-icon {
-  width: 26px;
-  height: 26px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.75rem;
-  font-weight: 700;
   flex-shrink: 0;
 }
 
-.status-solved   { background: var(--green-dim); color: var(--green); }
-.status-attempted { background: var(--amber-dim); color: var(--amber); }
-.status-unsolved  { background: var(--surface-2); color: var(--ink-4); border: 1px solid var(--border); }
+.problem-status-icon svg {
+  width: 15px;
+  height: 15px;
+}
+
+.problem-status-icon.status-solved {
+  background: var(--sf-green-100);
+  color: var(--sf-green-700);
+}
+
+.problem-status-icon.status-attempted {
+  background: var(--sf-gold-100);
+  color: var(--sf-gold-700);
+}
+
+.problem-status-icon.status-unsolved {
+  background: var(--sf-surface-sunken);
+  color: var(--sf-ink-4);
+}
 
 .problem-info {
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 5px;
   min-width: 0;
 }
 
 .problem-name {
-  font-size: 0.85rem;
-  font-weight: 500;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--sf-ink);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  color: var(--ink);
 }
 
 .problem-tags {
   display: flex;
-  gap: 4px;
+  align-items: center;
+  gap: 6px;
 }
 
-.tag {
-  font-size: 0.6rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  padding: 1px 6px;
-  border-radius: 3px;
+.problem-tags .tag {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 2px 9px;
+  border-radius: 99px;
+  white-space: nowrap;
 }
 
-.tag-platform {
-  color: var(--blue);
-  background: var(--blue-dim);
+.problem-tags .tag-platform {
+  color: var(--sf-ink-2);
+  background: var(--sf-surface-sunken);
 }
 
-.tag-diff.diff-easy   { color: var(--green); background: var(--green-dim); }
-.tag-diff.diff-medium { color: var(--amber); background: var(--amber-dim); }
-.tag-diff.diff-hard   { color: var(--red); background: var(--red-dim); }
+.problem-tags .diff-easy {
+  color: var(--sf-green-700);
+  background: var(--sf-green-100);
+}
+
+.problem-tags .diff-medium {
+  color: var(--sf-gold-700);
+  background: var(--sf-gold-100);
+}
+
+.problem-tags .diff-hard {
+  color: var(--sf-coral-700);
+  background: var(--sf-coral-100);
+}
 
 .problem-right {
   display: flex;
@@ -102,138 +133,231 @@
 }
 
 .problem-link {
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: var(--radius-xs);
-  color: var(--ink-4);
-  transition: all 0.12s;
+  border-radius: var(--sf-radius-sm);
+  color: var(--sf-ink-3);
+  transition: background 0.15s ease, color 0.15s ease;
 }
+
 .problem-link:hover {
-  background: var(--blue-dim);
-  color: var(--blue);
+  background: var(--sf-green-100);
+  color: var(--sf-green-700);
 }
 
 .expand-icon {
-  color: var(--ink-4);
+  color: var(--sf-ink-4);
   display: flex;
 }
 
-/* ── Problem Details ── */
+/* ── Expanded details ── */
 .problem-details {
-  padding: 0 14px 14px;
+  /* left edge lines up with the problem name above */
+  padding: 2px 22px 20px 64px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  border-top: 1px solid var(--border);
-  padding-top: 14px;
-  animation: fadeIn 0.15s ease;
+  gap: 16px;
+  animation: problemDetailIn 0.18s ease;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+@keyframes problemDetailIn {
+  from {
+    opacity: 0;
+    transform: translateY(-3px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .detail-row {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
 }
 
 .detail-label {
-  font-size: 0.65rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--ink-4);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--sf-ink-3);
 }
 
 .status-selector {
   display: flex;
-  gap: 4px;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 
 .status-option {
-  padding: 5px 12px;
-  border-radius: var(--radius-xs);
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: var(--ink-3);
-  border: 1px solid var(--border);
-  transition: all 0.12s;
-}
-.status-option:hover {
-  border-color: var(--border-hover);
-  color: var(--ink);
-}
-.status-selected {
-  background: var(--orange-dim);
-  border-color: var(--orange);
-  color: var(--orange);
-  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 13px;
+  border-radius: var(--sf-radius-sm);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--sf-ink-3);
+  background: var(--sf-surface);
+  border: 1px solid var(--sf-border);
+  cursor: pointer;
+  transition: color 0.15s ease, border-color 0.15s ease, background 0.15s ease;
 }
 
-.review-phases {
+.status-option svg {
+  width: 14px;
+  height: 14px;
+}
+
+.status-option:hover {
+  color: var(--sf-ink);
+  border-color: var(--sf-border-strong);
+}
+
+/* the selected option takes the colour of its status */
+.status-option.status-selected {
+  border-color: transparent;
+}
+
+.status-option.status-selected.status-option--solved {
+  background: var(--sf-green-100);
+  color: var(--sf-green-700);
+}
+
+.status-option.status-selected.status-option--attempted {
+  background: var(--sf-gold-100);
+  color: var(--sf-gold-700);
+}
+
+.status-option.status-selected.status-option--unsolved {
+  background: var(--sf-surface-sunken);
+  color: var(--sf-ink-2);
+}
+
+/* ── Review chips ── */
+.problem-details .review-phases {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 8px;
+  max-width: 480px;
 }
 
 .review-chip {
-  background: var(--bg-raised);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 8px 10px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  text-align: center;
-  transition: all 0.12s;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
+  gap: 3px;
+  padding: 10px 10px;
+  border-radius: var(--sf-radius-sm);
+  background: var(--sf-surface);
+  border: 1px solid var(--sf-border);
+  color: var(--sf-ink);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
 }
 
-.review-chip:hover:not(.review-locked) {
-  border-color: var(--orange);
-  background: var(--orange-dim);
+.review-chip:hover:not(:disabled) {
+  border-color: var(--sf-border-strong);
 }
 
-.review-done {
-  background: var(--green-dim) !important;
-  border-color: #bbf7d0 !important;
-  color: var(--green);
+.review-chip-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.82rem;
+  font-weight: 700;
 }
 
-.review-locked {
-  opacity: 0.3;
-  cursor: not-allowed;
-}
-
-.review-overdue {
-  background: var(--red-dim) !important;
-  border-color: #fecaca !important;
-  color: var(--red);
-}
-
-.review-today {
-  border-color: var(--orange) !important;
-  background: var(--orange-dim) !important;
-  color: var(--orange);
+.review-chip-label svg {
+  width: 12px;
+  height: 12px;
 }
 
 .review-chip-hint {
-  font-size: 0.6rem;
-  font-weight: 400;
-  color: var(--ink-4);
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--sf-ink-3);
 }
-.review-done .review-chip-hint { color: var(--green); }
-.review-overdue .review-chip-hint { color: var(--red); }
 
+.review-chip.review-done {
+  background: var(--sf-green-100);
+  border-color: transparent;
+  color: var(--sf-green-700);
+}
+
+.review-done .review-chip-hint {
+  color: var(--sf-green-700);
+}
+
+.review-chip.review-overdue {
+  background: var(--sf-coral-100);
+  border-color: transparent;
+  color: var(--sf-coral-700);
+}
+
+.review-overdue .review-chip-hint {
+  color: var(--sf-coral-700);
+  font-weight: 700;
+}
+
+.review-chip.review-today {
+  background: var(--sf-gold-100);
+  border-color: transparent;
+  color: var(--sf-gold-700);
+}
+
+.review-today .review-chip-hint {
+  color: var(--sf-gold-700);
+  font-weight: 700;
+}
+
+.review-chip.review-locked {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ── Remove ── */
 .detail-actions {
   display: flex;
   justify-content: flex-end;
+}
+
+.detail-remove-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: var(--sf-radius-sm);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--sf-coral-700);
+  background: var(--sf-coral-100);
+  border: none;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.detail-remove-btn:hover {
+  background: var(--sf-coral-700);
+  color: #fff;
+}
+
+.detail-remove-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .problem-main {
+    padding: 13px 16px;
+  }
+
+  .problem-details {
+    padding: 2px 16px 18px 16px;
+  }
 }

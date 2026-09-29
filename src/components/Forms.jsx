@@ -14,17 +14,17 @@ export function TopicForm({ onSubmit, onCancel, today }) {
 
   return (
     <form
-      className="form-card topic-form"
+      className="form-card"
       onSubmit={(e) => {
         e.preventDefault();
         if (!form.title.trim()) return;
         onSubmit(form);
       }}
     >
-      <h4 className="form-title">New Topic</h4>
+      <h4 className="form-title">New topic</h4>
       <div className="form-grid-2">
         <label className="form-field">
-          <span>Topic Title</span>
+          <span>Topic title</span>
           <input
             type="text"
             name="title"
@@ -36,7 +36,7 @@ export function TopicForm({ onSubmit, onCancel, today }) {
           />
         </label>
         <label className="form-field">
-          <span>Start Date</span>
+          <span>Start date</span>
           <input
             type="date"
             name="startDate"
@@ -58,7 +58,7 @@ export function TopicForm({ onSubmit, onCancel, today }) {
       </label>
       <div className="form-actions">
         <button type="submit" className="btn-primary">
-          {Icons.plus} Create Topic
+          {Icons.plus} Create topic
         </button>
         <button type="button" className="btn-ghost" onClick={onCancel}>
           Cancel
@@ -86,7 +86,7 @@ export function TopicEditForm({ topic, onSave, onCancel }) {
         onSave({ title: form.title.trim(), notes: form.notes.trim() });
       }}
     >
-      <h4 className="form-title">Edit Topic</h4>
+      <h4 className="form-title">Edit topic</h4>
       <label className="form-field">
         <span>Title</span>
         <input type="text" name="title" value={form.title} onChange={handleChange} required autoFocus />
@@ -96,7 +96,7 @@ export function TopicEditForm({ topic, onSave, onCancel }) {
         <textarea name="notes" rows="4" value={form.notes} onChange={handleChange} />
       </label>
       <div className="form-actions">
-        <button type="submit" className="btn-primary">Save Changes</button>
+        <button type="submit" className="btn-primary">Save changes</button>
         <button type="button" className="btn-ghost" onClick={onCancel}>Cancel</button>
       </div>
     </form>
@@ -127,10 +127,10 @@ export function ProblemForm({ onSubmit, onCancel }) {
         onSubmit(form);
       }}
     >
-      <h4 className="form-title">Add Problem</h4>
+      <h4 className="form-title">Add problem</h4>
       <div className="form-grid-2">
         <label className="form-field">
-          <span>Problem Name</span>
+          <span>Problem name</span>
           <input
             type="text"
             name="name"
@@ -174,7 +174,7 @@ export function ProblemForm({ onSubmit, onCancel }) {
       </div>
       <div className="form-actions">
         <button type="submit" className="btn-primary">
-          {Icons.plus} Add Problem
+          {Icons.plus} Add problem
         </button>
         <button type="button" className="btn-ghost" onClick={onCancel}>
           Cancel

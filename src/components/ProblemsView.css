@@ -455,19 +455,24 @@
   color: var(--sf-ink-3);
   padding: 4px;
   border-radius: var(--sf-radius-sm);
-  opacity: 0;
   flex-shrink: 0;
   background: var(--sf-surface-sunken);
   transition: all 0.15s ease;
 }
 
-.problems-list-row:hover .plr-link {
-  opacity: 1;
-}
-
 .plr-link:hover {
   color: var(--sf-green-700);
   background: var(--sf-green-100);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .plr-link {
+    opacity: 0;
+  }
+
+  .problems-list-row:hover .plr-link {
+    opacity: 1;
+  }
 }
 
 .plr-topic {
@@ -554,7 +559,6 @@
 }
 
 .plr-del {
-  opacity: 0;
   color: var(--sf-ink-3);
   background: transparent;
   border: none;
@@ -572,13 +576,19 @@
   height: 14px;
 }
 
-.problems-list-row:hover .plr-del {
-  opacity: 1;
-}
-
 .plr-del:hover {
   color: var(--sf-coral-700);
   background: var(--sf-coral-100);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .plr-del {
+    opacity: 0;
+  }
+
+  .problems-list-row:hover .plr-del {
+    opacity: 1;
+  }
 }
 
 /* ── Empty states ── */

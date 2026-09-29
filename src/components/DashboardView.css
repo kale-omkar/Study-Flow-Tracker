@@ -533,6 +533,15 @@
     gap: 4px;
   }
 
+  .week-bar-track {
+    height: 30px;
+    border-radius: 8px;
+  }
+
+  .week-bar-fill {
+    border-radius: 6px;
+  }
+
   .kpi-grid {
     grid-template-columns: 1fr 1fr;
   }

@@ -1,0 +1,113 @@
+.lib-view {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 56px 32px 88px;
+  font-family: var(--sf-font);
+  color: var(--sf-ink);
+  animation: libIn 0.25s ease;
+}
+@keyframes libIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+.lib-head { margin-bottom: 32px; }
+.lib-title { margin: 0; font-size: 2.2rem; font-weight: 800; line-height: 1.15; letter-spacing: -0.02em; color: var(--sf-blue-900); }
+.lib-subtitle { margin: 8px 0 0; max-width: 42em; font-size: 1rem; line-height: 1.6; color: var(--sf-ink-3); }
+
+.lib-grid { display: flex; flex-direction: column; gap: 16px; }
+
+/* Each pattern is a wide card: what it is on the left, what you can do on the right.
+   The guide opens underneath, spanning the full width. */
+.lib-card {
+  min-width: 0;
+  padding: 26px 28px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "top    actions"
+    "tag    actions"
+    "mix    actions"
+    "guide  guide";
+  column-gap: 40px;
+  align-items: start;
+  background: var(--sf-surface);
+  border-radius: var(--sf-radius-md);
+  box-shadow: var(--sf-shadow);
+}
+
+.lib-card-top { grid-area: top; display: flex; align-items: baseline; gap: 14px; margin-bottom: 6px; }
+.lib-card-title { margin: 0; font-size: 1.25rem; font-weight: 800; letter-spacing: -0.01em; color: var(--sf-ink); }
+.lib-count { flex-shrink: 0; font-size: 0.82rem; font-weight: 600; color: var(--sf-ink-3); }
+.lib-tagline { grid-area: tag; margin: 0 0 14px; max-width: 46em; font-size: 0.96rem; line-height: 1.55; color: var(--sf-ink-3); }
+
+.lib-mix { grid-area: mix; display: flex; flex-wrap: wrap; gap: 6px; }
+.lib-pill { padding: 3px 10px; border-radius: 99px; font-size: 0.74rem; font-weight: 700; }
+.lib-pill--easy   { background: var(--sf-green-100); color: var(--sf-green-700); }
+.lib-pill--medium { background: var(--sf-amber-100); color: var(--sf-amber-700); }
+.lib-pill--hard   { background: var(--sf-red-100);   color: var(--sf-red-700); }
+
+.lib-actions { grid-area: actions; align-self: center; display: flex; flex-direction: column; align-items: stretch; gap: 6px; min-width: 210px; }
+.lib-added { color: var(--sf-green-700); }
+.lib-added svg { width: 14px; height: 14px; }
+
+.lib-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: center;
+  padding: 8px 4px;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--sf-blue-600);
+  cursor: pointer;
+}
+.lib-toggle:hover { color: var(--sf-blue-700); }
+.lib-chev { display: flex; transition: transform 0.2s ease; }
+.lib-chev svg { width: 15px; height: 15px; }
+.lib-chev.is-open { transform: rotate(180deg); }
+
+.lib-guide { grid-area: guide; margin-top: 24px; padding-top: 24px; border-top: 1px solid var(--sf-border); }
+.lib-guide-cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; margin-bottom: 8px; }
+.lib-h { margin: 0 0 10px; font-size: 0.8rem; font-weight: 700; color: var(--sf-ink-3); }
+.lib-guide > .lib-h { margin-top: 22px; }
+.lib-guide-cols .lib-h { margin-top: 0; }
+
+.lib-list { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 7px; font-size: 0.95rem; line-height: 1.55; color: var(--sf-ink-2); }
+.lib-list li::marker { color: var(--sf-blue-600); font-weight: 700; }
+
+.lib-code {
+  margin: 0;
+  padding: 18px 20px;
+  overflow-x: auto;
+  border-radius: 10px;
+  background: var(--sf-ink);
+  color: #e2e8f0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.84rem;
+  line-height: 1.65;
+}
+.lib-code code { font-family: inherit; white-space: pre; }
+.lib-complexity { margin: 12px 0 0; font-size: 0.93rem; color: var(--sf-ink-2); }
+
+.lib-problems { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px 32px; }
+.lib-problem { display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--sf-border); min-width: 0; }
+.lib-problem a { min-width: 0; font-size: 0.93rem; font-weight: 600; color: var(--sf-ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lib-problem a:hover { color: var(--sf-blue-600); text-decoration: none; }
+.lib-diff { min-width: 62px; padding: 3px 9px; border-radius: 99px; text-align: center; font-size: 0.72rem; font-weight: 700; }
+.lib-diff--easy   { background: var(--sf-green-100); color: var(--sf-green-700); }
+.lib-diff--medium { background: var(--sf-amber-100); color: var(--sf-amber-700); }
+.lib-diff--hard   { background: var(--sf-red-100);   color: var(--sf-red-700); }
+
+@media (max-width: 900px) {
+  .lib-guide-cols, .lib-problems { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 760px) {
+  .lib-card {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "top" "tag" "mix" "actions" "guide";
+  }
+  .lib-actions { margin-top: 18px; min-width: 0; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 14px; }
+}
+@media (max-width: 640px) {
+  .lib-view { padding: 32px 18px 64px; }
+  .lib-title { font-size: 1.75rem; }
+  .lib-card { padding: 22px 18px; }
+}

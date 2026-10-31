@@ -3,13 +3,14 @@ import "./ProblemCard.css";
 import { Icons } from "../Icons";
 import { REVIEW_PHASES, STATUS_OPTIONS } from "../constants";
 import { addDays, diffInDays, getRelativeLabel } from "../utils";
+import StudyNotes from "./StudyNotes";
 
 // Status glyphs are drawn here (rather than taken from STATUS_OPTIONS) so
 // they always match the icon set, whatever the constants file contains.
 const STATUS_ICONS = {
-  unsolved: Icons.circle,
+  unsolved:  Icons.circle,
   attempted: Icons.circleHalf,
-  solved: Icons.check,
+  solved:    Icons.check,
 };
 
 export default function ProblemCard({
@@ -19,6 +20,10 @@ export default function ProblemCard({
   onUpdateStatus,
   onToggleReview,
   onDelete,
+  meta,
+  onMetaChange,
+  onSolve,
+  timerActive,
 }) {
   const [expanded, setExpanded] = useState(false);
 
@@ -26,8 +31,8 @@ export default function ProblemCard({
     problem.difficulty === "Easy"
       ? "diff-easy"
       : problem.difficulty === "Medium"
-        ? "diff-medium"
-        : "diff-hard";
+      ? "diff-medium"
+      : "diff-hard";
 
   return (
     <div className={`problem-card ${expanded ? "problem-expanded" : ""}`}>
@@ -113,7 +118,18 @@ export default function ProblemCard({
             </div>
           )}
 
+          {onMetaChange && (
+            <div className="detail-row">
+              <StudyNotes key={problem.id} meta={meta || {}} onChange={(patch) => onMetaChange(problem.name, patch)} />
+            </div>
+          )}
+
           <div className="detail-actions">
+            {onSolve && (
+              <button className="detail-solve-btn" disabled={timerActive} onClick={() => onSolve(problem)}>
+                {Icons.play} {timerActive ? "Timer running" : "Solve with timer"}
+              </button>
+            )}
             <button
               className="detail-remove-btn"
               onClick={() => onDelete(topicId, problem.id)}

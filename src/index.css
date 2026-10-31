@@ -80,6 +80,7 @@
 
   --sf-green-800: #1c4a34;
   --sf-green-700: #157a40;
+  --sf-green-600: #16a34a;
   --sf-green-500: #1fad61;
   --sf-green-100: #e6f5ec;
 
@@ -90,6 +91,31 @@
   --sf-coral-700: #cb4b34;
   --sf-coral-400: #e15a45;
   --sf-coral-100: #fce9e5;
+
+  /* Orange - primary CTA (Import XLSX, New topic, btn-primary) */
+  --sf-orange-600: #ea580c;
+  --sf-orange-500: #f97316;
+  --sf-orange-50:  #fff7ed;
+  --sf-orange-700: #c2410c;
+  --sf-orange-100: #fff7ed;
+
+  /* Blue - nav active state, brand, headings, heatmap */
+  --sf-blue-900: #1e3a5f;
+  --sf-blue-700: #1d4ed8;
+  --sf-blue-600: #2563eb;
+  --sf-blue-200: #bfdbfe;
+  --sf-blue-100: #dbeafe;
+  --sf-blue-50:  #eff6ff;
+
+  /* Amber - Medium difficulty */
+  --sf-amber-700: #b45309;
+  --sf-amber-500: #f59e0b;
+  --sf-amber-100: #fef3c7;
+
+  /* Red - Hard difficulty, nav badge, danger */
+  --sf-red-700: #b91c1c;
+  --sf-red-600: #dc2626;
+  --sf-red-100: #fee2e2;
 
   --sf-radius-sm: 10px;
   --sf-radius-md: 16px;

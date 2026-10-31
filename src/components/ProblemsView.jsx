@@ -2,7 +2,7 @@ import React, { useState, useMemo, useRef } from "react";
 import "./ProblemsView.css";
 import { Icons } from "../Icons";
 
-export default function ProblemsView({ problems, onImportXlsx, onUpdateStatus, onDelete }) {
+export default function ProblemsView({ problems, onImportXlsx, onUpdateStatus, onDelete, onOpenProblem }) {
   const fileInputRef = useRef(null);
   const [search, setSearch] = useState("");
   const [diffFilter, setDiffFilter] = useState("all");
@@ -33,16 +33,16 @@ export default function ProblemsView({ problems, onImportXlsx, onUpdateStatus, o
   }, [problems, search, diffFilter, platformFilter, topicFilter, statusTab]);
 
   const counts = useMemo(() => ({
-    all: problems.length,
-    unsolved: problems.filter((p) => p.status === "unsolved").length,
-    attempted: problems.filter((p) => p.status === "attempted").length,
-    solved: problems.filter((p) => p.status === "solved").length,
-    easy: problems.filter((p) => p.difficulty === "Easy").length,
-    medium: problems.filter((p) => p.difficulty === "Medium").length,
-    hard: problems.filter((p) => p.difficulty === "Hard").length,
-    easySolved: problems.filter((p) => p.difficulty === "Easy" && p.status === "solved").length,
+    all:          problems.length,
+    unsolved:     problems.filter((p) => p.status === "unsolved").length,
+    attempted:    problems.filter((p) => p.status === "attempted").length,
+    solved:       problems.filter((p) => p.status === "solved").length,
+    easy:         problems.filter((p) => p.difficulty === "Easy").length,
+    medium:       problems.filter((p) => p.difficulty === "Medium").length,
+    hard:         problems.filter((p) => p.difficulty === "Hard").length,
+    easySolved:   problems.filter((p) => p.difficulty === "Easy"   && p.status === "solved").length,
     mediumSolved: problems.filter((p) => p.difficulty === "Medium" && p.status === "solved").length,
-    hardSolved: problems.filter((p) => p.difficulty === "Hard" && p.status === "solved").length,
+    hardSolved:   problems.filter((p) => p.difficulty === "Hard"   && p.status === "solved").length,
   }), [problems]);
 
   const cycleStatus = (p) => {
@@ -102,7 +102,7 @@ export default function ProblemsView({ problems, onImportXlsx, onUpdateStatus, o
         <div className="problems-search-wrap">
           <span className="problems-search-icon">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
             </svg>
           </span>
           <input
@@ -147,10 +147,10 @@ export default function ProblemsView({ problems, onImportXlsx, onUpdateStatus, o
       {/* ── Status Tabs ── */}
       <div className="problems-tabs">
         {[
-          { key: "all", label: "All", count: counts.all },
-          { key: "unsolved", label: "Unsolved", count: counts.unsolved },
+          { key: "all",       label: "All",       count: counts.all },
+          { key: "unsolved",  label: "Unsolved",  count: counts.unsolved },
           { key: "attempted", label: "Attempted", count: counts.attempted },
-          { key: "solved", label: "Solved", count: counts.solved },
+          { key: "solved",    label: "Solved",    count: counts.solved },
         ].map((tab) => (
           <button
             key={tab.key}
@@ -185,13 +185,17 @@ export default function ProblemsView({ problems, onImportXlsx, onUpdateStatus, o
               <div key={p.id} className={`problems-list-row prow-${p.status}`}>
                 <span className="plr-num">{idx + 1}</span>
                 <span className="plr-name">
-                  <span className="plr-name-text" title={p.name}>{p.name}</span>
+                  {onOpenProblem ? (
+                    <button className="plr-name-text plr-name-btn" title={`${p.name} (open notes and timer)`} onClick={() => onOpenProblem(p)}>{p.name}</button>
+                  ) : (
+                    <span className="plr-name-text" title={p.name}>{p.name}</span>
+                  )}
                   {p.link && (
                     <a href={p.link} target="_blank" rel="noopener noreferrer" className="plr-link" onClick={(e) => e.stopPropagation()} title="Open problem">
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-                        <polyline points="15 3 21 3 21 9" />
-                        <line x1="10" y1="14" x2="21" y2="3" />
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                        <polyline points="15 3 21 3 21 9"/>
+                        <line x1="10" y1="14" x2="21" y2="3"/>
                       </svg>
                     </a>
                   )}
@@ -213,7 +217,7 @@ export default function ProblemsView({ problems, onImportXlsx, onUpdateStatus, o
         <div className="problems-empty">
           <div className="problems-empty-icon">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="16 18 22 12 16 6" /><polyline points="8 6 2 12 8 18" />
+              <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
             </svg>
           </div>
           <h3>No problems yet</h3>

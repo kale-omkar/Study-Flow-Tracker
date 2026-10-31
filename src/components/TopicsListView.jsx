@@ -1,207 +1,162 @@
-import React, { useState, useMemo } from "react";
-import "./TopicDetailView.css";
+import React from "react";
+import "./TopicsListView.css";
 import { Icons } from "../Icons";
-import { formatDate, addDays, diffInDays, getRelativeLabel } from "../utils";
+import { formatDate, diffInDays, addDays } from "../utils";
 import { REVIEW_PHASES } from "../constants";
-import ProblemCard from "./ProblemCard";
-import { TopicEditForm, ProblemForm } from "./Forms";
+import { TopicForm } from "./Forms";
 
-const PROBLEM_FILTERS = [
-  { key: "all", label: "All" },
-  { key: "solved", label: "Solved" },
-  { key: "attempted", label: "Attempted" },
-  { key: "unsolved", label: "Unsolved" },
-];
-
-export default function TopicDetailView({
-  topic,
+export default function TopicsListView({
+  topics,
   today,
-  editingTopic,
-  showProblemForm,
-  onSetEditingTopic,
-  onSetShowProblemForm,
-  onUpdateTopic,
+  showForm,
+  onShowForm,
+  onAddTopic,
   onDeleteTopic,
-  onToggleNotePhase,
-  onAddProblem,
-  onUpdateProblemStatus,
-  onToggleProblemReview,
-  onDeleteProblem,
-  onBack,
+  onSelectTopic,
 }) {
-  const problems = topic.problems || [];
-  const [problemFilter, setProblemFilter] = useState("all");
-
-  const filteredProblems = useMemo(() => {
-    if (problemFilter === "all") return problems;
-    return problems.filter((p) => p.status === problemFilter);
-  }, [problems, problemFilter]);
-
   return (
-    <div className="td-view">
+    <div className="topics-view">
       {/* ── Header ── */}
-      <header className="td-head">
+      <header className="topics-head">
         <div>
-          <button className="td-back" onClick={onBack}>
-            {Icons.arrowLeft} Topics
-          </button>
-          <h2 className="td-title">{topic.title}</h2>
-          <p className="td-subtitle">Started {formatDate(topic.startDate)}</p>
+          <h2 className="topics-title">Topics</h2>
+          <p className="topics-subtitle">
+            {topics.length === 0
+              ? "No topics yet — add your first one"
+              : `${topics.length} topic${topics.length === 1 ? "" : "s"}`}
+          </p>
         </div>
-        <div className="td-actions">
-          <button
-            className="td-btn"
-            onClick={() => onSetEditingTopic(editingTopic ? null : topic.id)}
-          >
-            {Icons.edit} Edit
+        {topics.length > 0 && !showForm && (
+          <button className="btn-primary" onClick={() => onShowForm(true)}>
+            {Icons.plus} New topic
           </button>
-          <button
-            className="td-btn td-btn--danger"
-            onClick={() => onDeleteTopic(topic.id)}
-          >
-            {Icons.trash} Delete
-          </button>
-        </div>
+        )}
       </header>
 
-      {editingTopic === topic.id && (
-        <TopicEditForm
-          topic={topic}
-          onSave={(updates) => onUpdateTopic(topic.id, updates)}
-          onCancel={() => onSetEditingTopic(null)}
+      {/* ── New-topic form ── */}
+      {showForm && (
+        <TopicForm
+          onSubmit={onAddTopic}
+          onCancel={() => onShowForm(false)}
         />
       )}
 
-      {/* ── Notes & Revision ── */}
-      <section className="td-section">
-        <div className="td-section-head">
-          <h3 className="td-section-title">
-            <span className="td-section-icon td-section-icon--note">{Icons.book}</span>
-            Notes &amp; revision
-          </h3>
-          <span className="td-section-badge">1-7-24 method</span>
-        </div>
+      {/* ── Topic cards ── */}
+      <div className="topics-grid">
+        {topics.length === 0 ? (
+          <div className="topics-empty">
+            <span className="topics-empty-icon">{Icons.book}</span>
+            <h3>No topics yet</h3>
+            <p>
+              Create a topic for each concept you're studying (e.g. "Arrays",
+              "Dynamic Programming").
+            </p>
+            {!showForm && (
+              <button className="btn-primary" onClick={() => onShowForm(true)}>
+                {Icons.plus} New topic
+              </button>
+            )}
+          </div>
+        ) : (
+          topics.map((topic) => {
+            const problems = topic.problems || [];
+            const solved = problems.filter((p) => p.status === "solved").length;
+            const total = problems.length;
 
-        <div className="td-section-body">
-          {topic.notes && (
-            <div className="td-notes">
-              <p>{topic.notes}</p>
-            </div>
-          )}
+            // Next pending review phase
+            const nextPhase = REVIEW_PHASES.find((p) => !topic.notePhases[p.key]);
+            const nextDue = nextPhase
+              ? addDays(topic.startDate, nextPhase.offset)
+              : null;
+            const daysUntil = nextDue ? diffInDays(today, nextDue) : null;
+            const isOverdue = daysUntil !== null && daysUntil < 0;
+            const isDueToday = daysUntil === 0;
+            const allDone = !nextPhase;
 
-          <div className="phase-timeline">
-            {REVIEW_PHASES.map((phase, i) => {
-              const isDone = topic.notePhases[phase.key];
-              const locked = i > 0 && !topic.notePhases[REVIEW_PHASES[i - 1].key];
-              const due = addDays(topic.startDate, phase.offset);
-              const d = diffInDays(today, due);
-              const isOverdue = !isDone && !locked && d < 0;
-              const isDueToday = !isDone && !locked && d === 0;
+            const pillClass = allDone
+              ? "status-complete"
+              : isOverdue
+              ? "status-overdue"
+              : isDueToday
+              ? "status-due"
+              : "status-ontrack";
 
-              return (
+            const pillLabel = allDone
+              ? "All reviewed"
+              : isOverdue
+              ? `Overdue by ${-daysUntil}d`
+              : isDueToday
+              ? "Review today"
+              : `Review in ${daysUntil}d`;
+
+            return (
+              <div
+                key={topic.id}
+                className="topic-card"
+                onClick={() => onSelectTopic(topic.id)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => e.key === "Enter" && onSelectTopic(topic.id)}
+              >
+                {/* Delete button */}
                 <button
-                  key={phase.key}
-                  className={`phase-chip ${isDone ? "phase-done" : ""} ${locked ? "phase-locked" : ""} ${isOverdue ? "phase-overdue" : ""} ${isDueToday ? "phase-today" : ""}`}
-                  onClick={() => onToggleNotePhase(topic.id, phase.key)}
-                  disabled={locked}
+                  className="topic-delete-btn"
+                  title="Delete topic"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDeleteTopic(topic.id);
+                  }}
                 >
-                  <span className="phase-node">
-                    {isDone ? Icons.check : locked ? Icons.lock : null}
-                  </span>
-                  <div className="phase-chip-info">
-                    <span className="phase-chip-label">{phase.label}</span>
-                    <span className="phase-chip-hint">
-                      {isDone ? (
-                        "Completed"
-                      ) : locked ? (
-                        "Complete previous first"
-                      ) : (
-                        <>
-                          <span>{formatDate(due)}</span>
-                          <span className="phase-chip-when">{getRelativeLabel(d)}</span>
-                        </>
-                      )}
+                  {Icons.trash}
+                </button>
+
+                <div className="topic-card-top">
+                  <h3 className="topic-card-title">{topic.title}</h3>
+                  <span className={`status-pill ${pillClass}`}>{pillLabel}</span>
+                </div>
+
+                <p className="topic-card-meta">
+                  {Icons.clock} Started {formatDate(topic.startDate)}
+                </p>
+
+                {topic.notes && (
+                  <p className="topic-card-notes" title={topic.notes}>
+                    {topic.notes.length > 100
+                      ? topic.notes.slice(0, 100) + "…"
+                      : topic.notes}
+                  </p>
+                )}
+
+                <div className="topic-card-stats">
+                  <div className="topic-stat">
+                    <span className="topic-stat-label">{Icons.code} Problems</span>
+                    <span className="topic-stat-value">
+                      {solved}
+                      <span className="topic-stat-denom">/{total}</span>
                     </span>
                   </div>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Practice Problems ── */}
-      <section className="td-section">
-        <div className="td-section-head">
-          <h3 className="td-section-title">
-            <span className="td-section-icon td-section-icon--problem">{Icons.code}</span>
-            Practice problems
-            <span className="td-section-count">{problems.length}</span>
-          </h3>
-          <button
-            className="td-add-btn"
-            onClick={() => onSetShowProblemForm(!showProblemForm)}
-          >
-            {Icons.plus} Add problem
-          </button>
-        </div>
-
-        {showProblemForm && (
-          <div className="td-section-body td-section-body--form">
-            <ProblemForm
-              onSubmit={(data) => onAddProblem(topic.id, data)}
-              onCancel={() => onSetShowProblemForm(false)}
-            />
-          </div>
-        )}
-
-        {problems.length > 0 && (
-          <div className="td-section-body td-section-body--filters">
-            <div className="problem-filters">
-              {PROBLEM_FILTERS.map((f) => (
-                <button
-                  key={f.key}
-                  className={`filter-chip ${problemFilter === f.key ? "filter-active" : ""}`}
-                  onClick={() => setProblemFilter(f.key)}
-                >
-                  {f.label}
-                  {f.key !== "all" && (
-                    <span className="filter-count">
-                      {problems.filter((p) => p.status === f.key).length}
+                  <div className="topic-stat">
+                    <span className="topic-stat-label">{Icons.check} Reviews done</span>
+                    <span className="topic-stat-value">
+                      {REVIEW_PHASES.filter((p) => topic.notePhases[p.key]).length}
+                      <span className="topic-stat-denom">/{REVIEW_PHASES.length}</span>
                     </span>
-                  )}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
+                  </div>
+                </div>
 
-        <div className="problems-list">
-          {filteredProblems.length > 0 ? (
-            filteredProblems.map((problem) => (
-              <ProblemCard
-                key={problem.id}
-                problem={problem}
-                topicId={topic.id}
-                today={today}
-                onUpdateStatus={onUpdateProblemStatus}
-                onToggleReview={onToggleProblemReview}
-                onDelete={onDeleteProblem}
-              />
-            ))
-          ) : (
-            <div className="td-empty">
-              <span className="td-empty-icon">{Icons.code}</span>
-              <p className="td-empty-title">
-                {problems.length === 0 ? "No problems yet" : "No problems match this filter"}
-              </p>
-              {problems.length === 0 && (
-                <p className="td-empty-hint">Add the first problem you're practicing for this topic.</p>
-              )}
-            </div>
-          )}
-        </div>
-      </section>
+                {total > 0 && (
+                  <div className="topic-progress-track">
+                    <div
+                      className="topic-progress-fill"
+                      style={{ width: `${Math.round((solved / total) * 100)}%` }}
+                    />
+                  </div>
+                )}
+              </div>
+            );
+          })
+        )}
+      </div>
     </div>
   );
 }

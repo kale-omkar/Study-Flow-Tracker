@@ -6,6 +6,13 @@ import { REVIEW_PHASES } from "../constants";
 import ProblemCard from "./ProblemCard";
 import { TopicEditForm, ProblemForm } from "./Forms";
 
+const PROBLEM_FILTERS = [
+  { key: "all",       label: "All" },
+  { key: "solved",    label: "Solved" },
+  { key: "attempted", label: "Attempted" },
+  { key: "unsolved",  label: "Unsolved" },
+];
+
 export default function TopicDetailView({
   topic,
   today,
@@ -21,6 +28,10 @@ export default function TopicDetailView({
   onToggleProblemReview,
   onDeleteProblem,
   onBack,
+  getMeta,
+  onMetaChange,
+  onSolveProblem,
+  timerActive,
 }) {
   const problems = topic.problems || [];
   const [problemFilter, setProblemFilter] = useState("all");
@@ -31,24 +42,25 @@ export default function TopicDetailView({
   }, [problems, problemFilter]);
 
   return (
-    <div className="view-content">
-      <header className="view-header">
+    <div className="td-view">
+      {/* ── Header ── */}
+      <header className="td-head">
         <div>
-          <button className="breadcrumb" onClick={onBack}>
-            ← Topics
+          <button className="td-back" onClick={onBack}>
+            {Icons.arrowLeft} Topics
           </button>
-          <h2 className="view-title">{topic.title}</h2>
-          <p className="view-subtitle">Started {formatDate(topic.startDate)}</p>
+          <h2 className="td-title">{topic.title}</h2>
+          <p className="td-subtitle">Started {formatDate(topic.startDate)}</p>
         </div>
-        <div className="header-actions">
+        <div className="td-actions">
           <button
-            className="btn-ghost"
+            className="td-btn"
             onClick={() => onSetEditingTopic(editingTopic ? null : topic.id)}
           >
             {Icons.edit} Edit
           </button>
           <button
-            className="btn-ghost btn-ghost-danger"
+            className="td-btn td-btn--danger"
             onClick={() => onDeleteTopic(topic.id)}
           >
             {Icons.trash} Delete
@@ -65,95 +77,106 @@ export default function TopicDetailView({
       )}
 
       {/* ── Notes & Revision ── */}
-      <section className="content-section">
-        <div className="section-header">
-          <h3>{Icons.book} Notes &amp; Revision</h3>
-          <span className="section-badge">1-7-24 Method</span>
+      <section className="td-section">
+        <div className="td-section-head">
+          <h3 className="td-section-title">
+            <span className="td-section-icon td-section-icon--note">{Icons.book}</span>
+            Notes &amp; revision
+          </h3>
+          <span className="td-section-badge">1-7-24 method</span>
         </div>
 
-        {topic.notes && (
-          <div className="notes-block">
-            <p>{topic.notes}</p>
-          </div>
-        )}
+        <div className="td-section-body">
+          {topic.notes && (
+            <div className="td-notes">
+              <p>{topic.notes}</p>
+            </div>
+          )}
 
-        <div className="phase-timeline">
-          {REVIEW_PHASES.map((phase, i) => {
-            const isDone = topic.notePhases[phase.key];
-            const locked = i > 0 && !topic.notePhases[REVIEW_PHASES[i - 1].key];
-            const due = addDays(topic.startDate, phase.offset);
-            const d = diffInDays(today, due);
-            const isOverdue = !isDone && !locked && d < 0;
-            const isDueToday = !isDone && !locked && d === 0;
+          <div className="phase-timeline">
+            {REVIEW_PHASES.map((phase, i) => {
+              const isDone = topic.notePhases[phase.key];
+              const locked = i > 0 && !topic.notePhases[REVIEW_PHASES[i - 1].key];
+              const due = addDays(topic.startDate, phase.offset);
+              const d = diffInDays(today, due);
+              const isOverdue = !isDone && !locked && d < 0;
+              const isDueToday = !isDone && !locked && d === 0;
 
-            return (
-              <button
-                key={phase.key}
-                className={`phase-chip ${isDone ? "phase-done" : ""} ${locked ? "phase-locked" : ""} ${isOverdue ? "phase-overdue" : ""} ${isDueToday ? "phase-today" : ""}`}
-                onClick={() => onToggleNotePhase(topic.id, phase.key)}
-                disabled={locked}
-              >
-                <span className="phase-chip-icon">
-                  {isDone ? Icons.check : locked ? "🔒" : "○"}
-                </span>
-                <div className="phase-chip-info">
-                  <span className="phase-chip-label">{phase.label}</span>
-                  <span className="phase-chip-hint">
-                    {isDone
-                      ? "Completed"
-                      : locked
-                      ? "Complete previous first"
-                      : `${formatDate(due)} · ${getRelativeLabel(d)}`}
+              return (
+                <button
+                  key={phase.key}
+                  className={`phase-chip ${isDone ? "phase-done" : ""} ${locked ? "phase-locked" : ""} ${isOverdue ? "phase-overdue" : ""} ${isDueToday ? "phase-today" : ""}`}
+                  onClick={() => onToggleNotePhase(topic.id, phase.key)}
+                  disabled={locked}
+                >
+                  <span className="phase-node">
+                    {isDone ? Icons.check : locked ? Icons.lock : null}
                   </span>
-                </div>
-              </button>
-            );
-          })}
+                  <div className="phase-chip-info">
+                    <span className="phase-chip-label">{phase.label}</span>
+                    <span className="phase-chip-hint">
+                      {isDone ? (
+                        "Completed"
+                      ) : locked ? (
+                        "Complete previous first"
+                      ) : (
+                        <>
+                          <span>{formatDate(due)}</span>
+                          <span className="phase-chip-when">{getRelativeLabel(d)}</span>
+                        </>
+                      )}
+                    </span>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </section>
 
       {/* ── Practice Problems ── */}
-      <section className="content-section">
-        <div className="section-header">
-          <h3>{Icons.code} Practice Problems</h3>
-          <div className="section-header-actions">
-            <button
-              className="btn-sm btn-accent"
-              onClick={() => onSetShowProblemForm(!showProblemForm)}
-            >
-              {Icons.plus} Add Problem
-            </button>
-          </div>
+      <section className="td-section">
+        <div className="td-section-head">
+          <h3 className="td-section-title">
+            <span className="td-section-icon td-section-icon--problem">{Icons.code}</span>
+            Practice problems
+            <span className="td-section-count">{problems.length}</span>
+          </h3>
+          <button
+            className="td-add-btn"
+            onClick={() => onSetShowProblemForm(!showProblemForm)}
+          >
+            {Icons.plus} Add problem
+          </button>
         </div>
 
         {showProblemForm && (
-          <ProblemForm
-            onSubmit={(data) => onAddProblem(topic.id, data)}
-            onCancel={() => onSetShowProblemForm(false)}
-          />
+          <div className="td-section-body td-section-body--form">
+            <ProblemForm
+              onSubmit={(data) => onAddProblem(topic.id, data)}
+              onCancel={() => onSetShowProblemForm(false)}
+            />
+          </div>
         )}
 
         {problems.length > 0 && (
-          <div className="problem-filters">
-            {[
-              { key: "all",       label: "All" },
-              { key: "solved",    label: "Solved" },
-              { key: "attempted", label: "Attempted" },
-              { key: "unsolved",  label: "Unsolved" },
-            ].map((f) => (
-              <button
-                key={f.key}
-                className={`filter-chip ${problemFilter === f.key ? "filter-active" : ""}`}
-                onClick={() => setProblemFilter(f.key)}
-              >
-                {f.label}
-                {f.key !== "all" && (
-                  <span className="filter-count">
-                    {problems.filter((p) => f.key === "all" || p.status === f.key).length}
-                  </span>
-                )}
-              </button>
-            ))}
+          <div className="td-section-body td-section-body--filters">
+            <div className="problem-filters">
+              {PROBLEM_FILTERS.map((f) => (
+                <button
+                  key={f.key}
+                  className={`filter-chip ${problemFilter === f.key ? "filter-active" : ""}`}
+                  onClick={() => setProblemFilter(f.key)}
+                >
+                  {f.label}
+                  {f.key !== "all" && (
+                    <span className="filter-count">
+                      {problems.filter((p) => p.status === f.key).length}
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
           </div>
         )}
 
@@ -168,15 +191,21 @@ export default function TopicDetailView({
                 onUpdateStatus={onUpdateProblemStatus}
                 onToggleReview={onToggleProblemReview}
                 onDelete={onDeleteProblem}
+                meta={getMeta ? getMeta(problem.name) : undefined}
+                onMetaChange={onMetaChange}
+                onSolve={onSolveProblem ? () => onSolveProblem(topic, problem) : undefined}
+                timerActive={timerActive}
               />
             ))
           ) : (
-            <div className="empty-state">
-              <p>
-                {problems.length === 0
-                  ? "No problems added yet. Start practicing!"
-                  : "No problems match this filter."}
+            <div className="td-empty">
+              <span className="td-empty-icon">{Icons.code}</span>
+              <p className="td-empty-title">
+                {problems.length === 0 ? "No problems yet" : "No problems match this filter"}
               </p>
+              {problems.length === 0 && (
+                <p className="td-empty-hint">Add the first problem you're practicing for this topic.</p>
+              )}
             </div>
           )}
         </div>

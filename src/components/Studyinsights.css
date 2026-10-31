@@ -1,0 +1,156 @@
+.si-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  gap: 24px;
+  align-items: stretch;
+}
+
+.si-card {
+  min-width: 0;
+  padding: 28px;
+  background: var(--sf-surface);
+  border-radius: var(--sf-radius-md);
+  box-shadow: var(--sf-shadow);
+  font-family: var(--sf-font);
+  display: flex;
+  flex-direction: column;
+}
+
+.si-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
+.si-title { margin: 0; display: flex; align-items: center; gap: 10px; font-size: 1.2rem; font-weight: 700; color: var(--sf-ink); }
+.si-icon { display: flex; color: var(--sf-ink); }
+.si-icon svg { width: 19px; height: 19px; }
+.si-sub { margin: 4px 0 0; font-size: 0.92rem; color: var(--sf-ink-3); }
+
+.si-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  padding: 7px 12px;
+  border-radius: var(--sf-radius-sm);
+  box-shadow: 0 0 0 1px var(--sf-border-strong);
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: var(--sf-ink-2);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.si-ghost:hover { background: var(--sf-surface-sunken); color: var(--sf-ink); }
+.si-ghost svg { width: 14px; height: 14px; }
+
+/* Practice next */
+.si-picks { list-style: none; margin: 0; padding: 0; }
+.si-pick {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 0;
+  border-top: 1px solid var(--sf-border);
+}
+.si-diff {
+  min-width: 66px;
+  padding: 4px 10px;
+  border-radius: 99px;
+  text-align: center;
+  font-size: 0.74rem;
+  font-weight: 700;
+  background: var(--sf-surface-sunken);
+  color: var(--sf-ink-2);
+}
+.si-diff--easy   { background: var(--sf-green-100); color: var(--sf-green-700); }
+.si-diff--medium { background: var(--sf-amber-100); color: var(--sf-amber-700); }
+.si-diff--hard   { background: var(--sf-red-100);   color: var(--sf-red-700); }
+
+.si-pick-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.si-pick-name {
+  padding: 0;
+  text-align: left;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--sf-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+.si-pick-name:hover { color: var(--sf-blue-600); }
+.si-pick-meta { display: flex; align-items: center; gap: 8px; min-width: 0; font-size: 0.8rem; color: var(--sf-ink-3); }
+.si-reason { flex-shrink: 0; font-weight: 700; color: var(--sf-blue-700); }
+.si-group { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.si-start {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  padding: 8px 14px;
+  border-radius: var(--sf-radius-sm);
+  background: var(--sf-orange-600);
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.si-start svg { width: 12px; height: 12px; }
+.si-start:hover { background: var(--sf-orange-700); }
+.si-start:disabled { opacity: 0.45; cursor: not-allowed; background: var(--sf-orange-600); }
+
+.si-empty { padding: 8px 0 4px; }
+.si-empty p { margin: 0 0 16px; font-size: 0.97rem; line-height: 1.6; color: var(--sf-ink-3); }
+.si-empty-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+
+/* Consistency */
+.si-streaks { display: flex; gap: 36px; margin-bottom: 22px; }
+.si-stat { display: flex; flex-direction: column; gap: 2px; }
+.si-stat::before { content: ""; width: 28px; height: 3px; margin-bottom: 10px; border-radius: 2px; background: var(--sf-border-strong); }
+.si-stat--blue::before  { background: var(--sf-blue-600); }
+.si-stat--green::before { background: var(--sf-green-600); }
+.si-stat strong { font-size: 1.75rem; font-weight: 800; line-height: 1.1; color: var(--sf-ink); font-variant-numeric: tabular-nums; }
+.si-stat span { font-size: 0.88rem; font-weight: 500; color: var(--sf-ink-3); }
+
+.si-heat { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 5px; }
+.si-heat-col { display: grid; grid-template-rows: repeat(7, auto); gap: 5px; }
+
+.si-cell { display: block; height: 18px; border-radius: 4px; background: var(--sf-surface-sunken); }
+.si-cell.lvl-1 { background: var(--sf-blue-100); }
+.si-cell.lvl-2 { background: var(--sf-blue-200); }
+.si-cell.lvl-3 { background: #60a5fa; }
+.si-cell.lvl-4 { background: var(--sf-blue-600); }
+.si-cell.is-future { visibility: hidden; }
+.si-cell.is-today { box-shadow: 0 0 0 2px var(--sf-surface), 0 0 0 4px var(--sf-orange-500); }
+
+.si-legend { display: flex; align-items: center; justify-content: flex-end; gap: 5px; margin-top: 10px; font-size: 0.74rem; color: var(--sf-ink-3); }
+.si-cell--legend { width: 11px; height: 11px; border-radius: 3px; }
+
+.si-times { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--sf-border); }
+.si-times-label { display: block; margin-bottom: 12px; font-size: 0.8rem; font-weight: 700; color: var(--sf-ink-3); }
+.si-times-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.si-time { display: flex; flex-direction: column; gap: 1px; }
+.si-time-diff { font-size: 0.78rem; font-weight: 600; color: var(--sf-ink-3); }
+.si-time strong { font-size: 1.1rem; font-weight: 800; color: var(--sf-ink); }
+.si-time-target { font-size: 0.74rem; color: var(--sf-ink-4); }
+.si-times-empty { margin: 0; font-size: 0.9rem; line-height: 1.55; color: var(--sf-ink-3); }
+
+@media (max-width: 960px) {
+  .si-row { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 640px) {
+  .si-card { padding: 22px 18px; }
+  .si-streaks { gap: 26px; }
+  .si-pick { gap: 10px; }
+  .si-diff { min-width: 0; }
+}
+
+/* Footer pinned to the bottom of the practice card so both cards end together */
+.si-foot {
+  margin: auto 0 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--sf-border);
+  font-size: 0.9rem;
+  color: var(--sf-ink-3);
+}
+.si-picks { margin-bottom: 16px; }
+.si-link { padding: 0; font-size: inherit; font-weight: 700; color: var(--sf-blue-600); cursor: pointer; }
+.si-link:hover { color: var(--sf-blue-700); text-decoration: underline; }

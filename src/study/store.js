@@ -131,7 +131,7 @@ export function buildPool(topics, problems) {
       out.push({
         key: `t:${t.id}:${p.id}`, source: "topic", topicId: t.id, id: p.id, name: p.name,
         difficulty: p.difficulty, platform: p.platform, link: p.link, status: p.status,
-        solvedDate: p.solvedDate, group: t.title,
+        solvedDate: p.solvedDate, group: t.title, track: "dsa",
       })
     )
   );
@@ -139,7 +139,7 @@ export function buildPool(topics, problems) {
     out.push({
       key: `g:${p.id}`, source: "global", topicId: null, id: p.id, name: p.name,
       difficulty: p.difficulty, platform: p.platform, link: p.link, status: p.status,
-      solvedDate: p.solvedDate, group: p.topic || "Uncategorized",
+      solvedDate: p.solvedDate, group: p.topic || "Uncategorized", track: p.track || "dsa",
     })
   );
   return out;

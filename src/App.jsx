@@ -379,13 +379,17 @@ export default function App() {
                 difficulty: row.difficulty,
                 link: row.link,
                 topic: row.topic,
+                track: row.track || "dsa",
                 status,
                 solvedDate: status === "solved" ? getTodayString() : null,
                 addedAt: new Date().toISOString(),
               };
             });
+          const dsaCount = newProblems.filter((p) => p.track === "dsa").length;
+          const sqlCount = newProblems.filter((p) => p.track === "sql").length;
+          const trackSummary = sqlCount > 0 ? ` (${dsaCount} DSA, ${sqlCount} SQL)` : "";
           alert(
-            `Imported ${newProblems.length} problems. (${parsed.length - newProblems.length} duplicates skipped)`,
+            `Imported ${newProblems.length} problems${trackSummary}. (${parsed.length - newProblems.length} duplicates skipped)`,
           );
           return [...prev, ...newProblems];
         });

@@ -9,6 +9,7 @@ export const REVIEW_PHASES = [
 
 export const PLATFORMS = [
   "LeetCode",
+  "LeetCode Premium",
   "HackerRank",
   "Codeforces",
   "CodeChef",
@@ -18,6 +19,12 @@ export const PLATFORMS = [
 ];
 
 export const DIFFICULTY = ["Easy", "Medium", "Hard"];
+
+export const TRACKS = [
+  { key: "all", label: "All Questions" },
+  { key: "dsa", label: "DSA & Algorithms" },
+  { key: "sql", label: "SQL & Databases" },
+];
 
 export const STATUS_OPTIONS = [
   { value: "solved",    label: "Solved",    icon: "✓" },

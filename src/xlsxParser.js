@@ -1,5 +1,5 @@
 import * as XLSX from "xlsx";
-import { PLATFORMS } from "./constants";
+import { PLATFORMS } from "./constants.js";
 
 const normalizeHeader = (h) => String(h).trim().toLowerCase().replace(/[^a-z]/g, "");
 
@@ -10,7 +10,7 @@ const HEADER_MAP = {
   platform:   ["platform", "source", "site", "website", "origin"],
   difficulty: ["difficulty", "diff", "level"],
   link:       ["link", "url", "problemlink", "problemurl"],
-  topic:      ["topic", "category", "tag", "subject"],
+  topic:      ["topic", "category", "tag", "subject", "topiccategory"],
   status:     ["status", "state", "progress", "completion"],
 };
 
@@ -24,7 +24,10 @@ const matchHeader = (header) => {
 
 const matchPlatform = (raw) => {
   if (!raw) return "LeetCode";
-  const lower = raw.toLowerCase();
+  const lower = raw.toLowerCase().trim();
+  if (lower.includes("hackerrank")) return "HackerRank";
+  if (lower.includes("premium")) return "LeetCode Premium";
+  if (lower.includes("leetcode")) return "LeetCode";
   return PLATFORMS.find((p) => lower.includes(p.toLowerCase())) || "Other";
 };
 
@@ -52,8 +55,7 @@ const matchStatus = (raw) => {
   return "unsolved";
 };
 
-// Build a LeetCode URL slug from a problem name:
-//   "Two Sum" → "two-sum", "Add Two Numbers" → "add-two-numbers"
+// Build URL slugs for LeetCode and HackerRank
 const slugify = (name) =>
   name
     .toLowerCase()
@@ -61,7 +63,6 @@ const slugify = (name) =>
     .trim()
     .replace(/\s+/g, "-");
 
-// Returns true if a row cell looks like one of our recognised header words
 const isHeaderCell = (cell) => {
   const s = String(cell).trim();
   if (!s || s.length > 40) return false;
@@ -71,79 +72,135 @@ const isHeaderCell = (cell) => {
   );
 };
 
+// Check if a sheet is an informational / dashboard sheet rather than a problem list
+const isIgnoredSheet = (sheetName) => {
+  const s = sheetName.toLowerCase();
+  return (
+    s.includes("dashboard") ||
+    s.includes("analytics") ||
+    s.includes("trade-off") ||
+    s.includes("tradeoff") ||
+    s.includes("guide") ||
+    s.includes("sync") ||
+    s.includes("script") ||
+    s.includes("readme") ||
+    s.includes("instruction") ||
+    s.includes("catalog") ||    // Skip duplicate master catalog sheets
+    s.includes("master list")   // Skip other duplicate list sheets
+  );
+};
+
 export const parseXlsx = (buffer) => {
   const workbook = XLSX.read(buffer, { type: "array" });
-  const sheet = workbook.Sheets[workbook.SheetNames[0]];
-  const rawRows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
-  if (rawRows.length === 0) return [];
+  const allProblems = [];
 
-  // Find the header row: the first row that matches >= 2 known header words
-  let headerRowIdx = -1;
-  for (let i = 0; i < rawRows.length; i++) {
-    const matchCount = rawRows[i].filter(isHeaderCell).length;
-    if (matchCount >= 2) { headerRowIdx = i; break; }
-  }
-  if (headerRowIdx === -1) return [];
+  // Iterate over all sheets in the workbook to handle multi-tab files (DSA, SQL, etc.)
+  for (const sheetName of workbook.SheetNames) {
+    if (isIgnoredSheet(sheetName)) continue;
 
-  // Map column names → column indices
-  const headerRow = rawRows[headerRowIdx];
-  const colMap = {};
-  headerRow.forEach((cell, idx) => {
-    const field = matchHeader(String(cell));
-    if (field && !(field in colMap)) colMap[field] = idx;
-  });
+    const sheet = workbook.Sheets[sheetName];
+    if (!sheet) continue;
+    const rawRows = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
+    if (rawRows.length === 0) continue;
 
-  // Fallback: if no "problem" column found, assume column index 1
-  if (colMap.problem === undefined && headerRow.length >= 2) colMap.problem = 1;
-  if (colMap.problem === undefined) return [];
-
-  return rawRows
-    .slice(headerRowIdx + 1)
-    .map((row) => {
-      const name = String(row[colMap.problem] ?? "").trim();
-      const platform =
-        colMap.platform !== undefined
-          ? matchPlatform(String(row[colMap.platform] || ""))
-          : "LeetCode";
-
-      // Build link: use explicit link column if present, otherwise generate
-      // a LeetCode URL from the problem name (works for this sheet's format)
-      let link = "";
-      if (colMap.link !== undefined) {
-        link = String(row[colMap.link] || "").trim();
+    // Find the header row (matches >= 2 known header columns)
+    let headerRowIdx = -1;
+    for (let i = 0; i < Math.min(rawRows.length, 15); i++) {
+      const matchCount = rawRows[i].filter(isHeaderCell).length;
+      if (matchCount >= 2) {
+        headerRowIdx = i;
+        break;
       }
-      if (!link && platform === "LeetCode" && name) {
-        link = `https://leetcode.com/problems/${slugify(name)}/`;
-      }
+    }
+    if (headerRowIdx === -1) continue;
 
-      // Merge multiple topics (comma-separated) from the TOPIC column
-      const topic =
-        colMap.topic !== undefined
-          ? String(row[colMap.topic] || "").trim()
-          : "";
-
-      return {
-        name,
-        platform,
-        difficulty: matchDifficulty(
-          colMap.difficulty !== undefined ? String(row[colMap.difficulty] || "") : ""
-        ),
-        link,
-        topic,
-        // importedStatus lets App.jsx pre-set the status from the sheet
-        importedStatus:
-          colMap.status !== undefined
-            ? matchStatus(String(row[colMap.status] || ""))
-            : "unsolved",
-      };
-    })
-    .filter((row) => {
-      if (!row.name) return false;
-      // Skip rows where the "problem" cell is just a number (row counter)
-      if (/^\d+$/.test(row.name)) return false;
-      const n = row.name.toLowerCase();
-      // Skip header-like ghost rows
-      if (["problem", "name", "title", "#", "question"].includes(n)) return false;
-      return true;
+    const headerRow = rawRows[headerRowIdx];
+    const colMap = {};
+    headerRow.forEach((cell, idx) => {
+      const field = matchHeader(String(cell));
+      if (field && !(field in colMap)) colMap[field] = idx;
     });
+
+    if (colMap.problem === undefined && headerRow.length >= 2) colMap.problem = 1;
+    if (colMap.problem === undefined) continue;
+
+    const lowerSheet = sheetName.toLowerCase();
+    const isSqlSheet =
+      lowerSheet.includes("sql") ||
+      lowerSheet.includes("database") ||
+      lowerSheet.includes("query");
+
+    const sheetProblems = rawRows
+      .slice(headerRowIdx + 1)
+      .map((row) => {
+        const name = String(row[colMap.problem] ?? "").trim();
+        const platform =
+          colMap.platform !== undefined
+            ? matchPlatform(String(row[colMap.platform] || ""))
+            : "LeetCode";
+
+        let link = "";
+        if (colMap.link !== undefined) {
+          link = String(row[colMap.link] || "").trim();
+        }
+        if (!link && name) {
+          if (platform === "HackerRank") {
+            link = `https://www.hackerrank.com/challenges/${slugify(name)}/problem`;
+          } else {
+            link = `https://leetcode.com/problems/${slugify(name)}/`;
+          }
+        }
+
+        const topic =
+          colMap.topic !== undefined
+            ? String(row[colMap.topic] || "").trim()
+            : "";
+
+        // Track is determined solely by which sheet the problem came from.
+        // We do NOT use topic content to classify track — a DSA problem about
+        // "Database" (e.g. Design a Key-Value Store) is still a DSA problem.
+        const track = isSqlSheet ? "sql" : "dsa";
+
+        return {
+          name,
+          platform,
+          difficulty: matchDifficulty(
+            colMap.difficulty !== undefined ? String(row[colMap.difficulty] || "") : ""
+          ),
+          link,
+          topic,
+          track,
+          sheetName,
+          importedStatus:
+            colMap.status !== undefined
+              ? matchStatus(String(row[colMap.status] || ""))
+              : "unsolved",
+        };
+      })
+      .filter((row) => {
+        if (!row.name) return false;
+        if (/^\d+$/.test(row.name)) return false;
+        const n = row.name.toLowerCase();
+        if (["problem", "name", "title", "#", "question"].includes(n)) return false;
+        return true;
+      });
+
+    allProblems.push(...sheetProblems);
+  }
+
+  // Deduplicate within each track independently.
+  // A DSA problem and an SQL problem with the same name are kept as two separate entries
+  // (e.g. "Find Median from Data Stream" can be in both the DSA and SQL lists).
+  // Within the same track, combine name + platform as the key so that the same problem
+  // appearing on multiple platforms (e.g. "Binary Tree Nodes" on LeetCode AND HackerRank)
+  // is counted as two distinct entries.
+  const seen = new Map();
+  for (const item of allProblems) {
+    const key = `${item.track}|${(item.platform || "").toLowerCase()}|${item.name.toLowerCase()}`;
+    if (!seen.has(key)) {
+      seen.set(key, item);
+    }
+  }
+
+  return Array.from(seen.values());
 };

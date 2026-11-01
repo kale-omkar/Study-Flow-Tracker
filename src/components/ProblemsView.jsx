@@ -12,50 +12,87 @@ export default function ProblemsView({
 }) {
   const fileInputRef = useRef(null);
   const [search, setSearch] = useState("");
+  const [trackFilter, setTrackFilter] = useState("all"); // "all" | "dsa" | "sql"
   const [diffFilter, setDiffFilter] = useState("all");
   const [platformFilter, setPlatformFilter] = useState("all");
   const [topicFilter, setTopicFilter] = useState("all");
   const [statusTab, setStatusTab] = useState("all");
 
-  const platforms = useMemo(() => {
-    const s = new Set(problems.map((p) => p.platform).filter(Boolean));
-    return Array.from(s).sort();
+  // Track breakdown counts across all loaded problems
+  const trackCounts = useMemo(() => {
+    let dsa = 0;
+    let sql = 0;
+    problems.forEach((p) => {
+      if (p.track === "sql") sql++;
+      else dsa++;
+    });
+    return { all: problems.length, dsa, sql };
   }, [problems]);
 
-  const topics = useMemo(() => {
-    const s = new Set(problems.map((p) => p.topic).filter(Boolean));
+  // Problems filtered by the active track (All / DSA / SQL)
+  const trackProblems = useMemo(() => {
+    if (trackFilter === "all") return problems;
+    return problems.filter((p) => (p.track || "dsa") === trackFilter);
+  }, [problems, trackFilter]);
+
+  // Platforms and topics are contextual to the active track
+  const platforms = useMemo(() => {
+    const s = new Set(trackProblems.map((p) => p.platform).filter(Boolean));
     return Array.from(s).sort();
-  }, [problems]);
+  }, [trackProblems]);
+
+  const topics = useMemo(() => {
+    const s = new Set();
+    trackProblems.forEach((p) => {
+      if (!p.topic) return;
+      p.topic.split(",").forEach((t) => {
+        const trimmed = t.trim();
+        if (trimmed) s.add(trimmed);
+      });
+    });
+    return Array.from(s).sort((a, b) => a.localeCompare(b));
+  }, [trackProblems]);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
-    return problems.filter((p) => {
+    return trackProblems.filter((p) => {
       if (statusTab !== "all" && p.status !== statusTab) return false;
       if (diffFilter !== "all" && p.difficulty !== diffFilter) return false;
       if (platformFilter !== "all" && p.platform !== platformFilter) return false;
-      if (topicFilter !== "all" && p.topic !== topicFilter) return false;
+      if (topicFilter !== "all") {
+        if (!p.topic) return false;
+        const itemTopics = p.topic.split(",").map((t) => t.trim().toLowerCase());
+        if (!itemTopics.includes(topicFilter.toLowerCase())) return false;
+      }
       if (q && !p.name.toLowerCase().includes(q)) return false;
       return true;
     });
-  }, [problems, search, diffFilter, platformFilter, topicFilter, statusTab]);
+  }, [trackProblems, search, diffFilter, platformFilter, topicFilter, statusTab]);
 
+  // Counts for the active track
   const counts = useMemo(() => ({
-    all:          problems.length,
-    unsolved:     problems.filter((p) => p.status === "unsolved").length,
-    attempted:    problems.filter((p) => p.status === "attempted").length,
-    solved:       problems.filter((p) => p.status === "solved").length,
-    easy:         problems.filter((p) => p.difficulty === "Easy").length,
-    medium:       problems.filter((p) => p.difficulty === "Medium").length,
-    hard:         problems.filter((p) => p.difficulty === "Hard").length,
-    easySolved:   problems.filter((p) => p.difficulty === "Easy"   && p.status === "solved").length,
-    mediumSolved: problems.filter((p) => p.difficulty === "Medium" && p.status === "solved").length,
-    hardSolved:   problems.filter((p) => p.difficulty === "Hard"   && p.status === "solved").length,
-  }), [problems]);
+    all:          trackProblems.length,
+    unsolved:     trackProblems.filter((p) => p.status === "unsolved").length,
+    attempted:    trackProblems.filter((p) => p.status === "attempted").length,
+    solved:       trackProblems.filter((p) => p.status === "solved").length,
+    easy:         trackProblems.filter((p) => p.difficulty === "Easy").length,
+    medium:       trackProblems.filter((p) => p.difficulty === "Medium").length,
+    hard:         trackProblems.filter((p) => p.difficulty === "Hard").length,
+    easySolved:   trackProblems.filter((p) => p.difficulty === "Easy"   && p.status === "solved").length,
+    mediumSolved: trackProblems.filter((p) => p.difficulty === "Medium" && p.status === "solved").length,
+    hardSolved:   trackProblems.filter((p) => p.difficulty === "Hard"   && p.status === "solved").length,
+  }), [trackProblems]);
 
   const cycleStatus = (p) => {
     const order = ["unsolved", "attempted", "solved"];
     const next = order[(order.indexOf(p.status) + 1) % order.length];
     onUpdateStatus(p.id, next);
+  };
+
+  const handleTrackChange = (newTrack) => {
+    setTrackFilter(newTrack);
+    setTopicFilter("all");
+    setPlatformFilter("all");
   };
 
   return (
@@ -64,10 +101,17 @@ export default function ProblemsView({
       <div className="problems-head">
         <div>
           <h2 className="problems-title">Problems</h2>
-          <p className="problems-subtitle">{counts.all} problems imported</p>
+          <p className="problems-subtitle">
+            {trackCounts.all} problems loaded
+            {trackCounts.sql > 0 && (
+              <span className="problems-subtitle-breakdown">
+                {" "}({trackCounts.dsa} DSA, {trackCounts.sql} SQL)
+              </span>
+            )}
+          </p>
         </div>
         <div className="problems-head-actions">
-          {counts.all > 0 && onClearAll && (
+          {trackCounts.all > 0 && onClearAll && (
             <button
               className="btn-ghost problems-clear-all-btn"
               type="button"
@@ -97,6 +141,44 @@ export default function ProblemsView({
           }}
         />
       </div>
+
+      {/* ── Track Selector (DSA vs SQL Tabs) ── */}
+      {trackCounts.sql > 0 && (
+        <div className="problems-track-bar" role="tablist" aria-label="Question Track">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={trackFilter === "all"}
+            className={`track-tab ${trackFilter === "all" ? "track-tab--active" : ""}`}
+            onClick={() => handleTrackChange("all")}
+          >
+            <span>All Questions</span>
+            <span className="track-tab-count">{trackCounts.all}</span>
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={trackFilter === "dsa"}
+            className={`track-tab ${trackFilter === "dsa" ? "track-tab--active" : ""}`}
+            onClick={() => handleTrackChange("dsa")}
+          >
+            <span className="track-tab-icon">{Icons.code}</span>
+            <span>DSA &amp; Algorithms</span>
+            <span className="track-tab-count">{trackCounts.dsa}</span>
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={trackFilter === "sql"}
+            className={`track-tab ${trackFilter === "sql" ? "track-tab--active" : ""}`}
+            onClick={() => handleTrackChange("sql")}
+          >
+            <span className="track-tab-icon">{Icons.database}</span>
+            <span>SQL &amp; Databases</span>
+            <span className="track-tab-count">{trackCounts.sql}</span>
+          </button>
+        </div>
+      )}
 
       {/* ── Stats Row ── */}
       {counts.all > 0 && (
@@ -130,12 +212,12 @@ export default function ProblemsView({
           </span>
           <input
             className="problems-search-input"
-            placeholder="Search by name…"
+            placeholder={`Search ${trackFilter === "sql" ? "SQL queries" : trackFilter === "dsa" ? "DSA problems" : "problems"} by name…`}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
           {search && (
-            <button className="problems-search-clear" onClick={() => setSearch("")} title="Clear search">
+            <button className="problems-search-clear" type="button" onClick={() => setSearch("")} title="Clear search">
               ×
             </button>
           )}
@@ -145,6 +227,7 @@ export default function ProblemsView({
             {["all", "Easy", "Medium", "Hard"].map((d) => (
               <button
                 key={d}
+                type="button"
                 className={`diff-pill ${d === "Easy" ? "dp-easy" : d === "Medium" ? "dp-medium" : d === "Hard" ? "dp-hard" : "dp-all"} ${diffFilter === d ? "dp-active" : ""}`}
                 onClick={() => setDiffFilter(d)}
               >
@@ -153,13 +236,21 @@ export default function ProblemsView({
             ))}
           </div>
           {platforms.length > 0 && (
-            <select className="problems-filter-select" value={platformFilter} onChange={(e) => setPlatformFilter(e.target.value)}>
+            <select
+              className="problems-filter-select"
+              value={platformFilter}
+              onChange={(e) => setPlatformFilter(e.target.value)}
+            >
               <option value="all">All platforms</option>
               {platforms.map((pl) => <option key={pl} value={pl}>{pl}</option>)}
             </select>
           )}
           {topics.length > 0 && (
-            <select className="problems-filter-select" value={topicFilter} onChange={(e) => setTopicFilter(e.target.value)}>
+            <select
+              className="problems-filter-select"
+              value={topicFilter}
+              onChange={(e) => setTopicFilter(e.target.value)}
+            >
               <option value="all">All topics</option>
               {topics.map((t) => <option key={t} value={t}>{t}</option>)}
             </select>
@@ -177,6 +268,7 @@ export default function ProblemsView({
         ].map((tab) => (
           <button
             key={tab.key}
+            type="button"
             className={`pst-btn ${statusTab === tab.key ? "pst-active" : ""}`}
             onClick={() => setStatusTab(tab.key)}
           >
@@ -195,7 +287,7 @@ export default function ProblemsView({
           <div className="problems-list-head">
             <span className="plh-num">#</span>
             <span className="plh-name">Problem</span>
-            <span className="plh-topic">Topic</span>
+            <span className="plh-topic">Topic / Category</span>
             <span className="plh-platform">Platform</span>
             <span className="plh-diff">Difficulty</span>
             <span className="plh-status">Status</span>
@@ -209,12 +301,31 @@ export default function ProblemsView({
                 <span className="plr-num">{idx + 1}</span>
                 <span className="plr-name">
                   {onOpenProblem ? (
-                    <button className="plr-name-text plr-name-btn" title={`${p.name} (open notes and timer)`} onClick={() => onOpenProblem(p)}>{p.name}</button>
+                    <button
+                      className="plr-name-text plr-name-btn"
+                      type="button"
+                      title={`${p.name} (open notes and timer)`}
+                      onClick={() => onOpenProblem(p)}
+                    >
+                      {p.name}
+                    </button>
                   ) : (
                     <span className="plr-name-text" title={p.name}>{p.name}</span>
                   )}
+                  {p.track === "sql" && (
+                    <span className="plr-track-badge plr-track-badge--sql" title="SQL Challenge">
+                      SQL
+                    </span>
+                  )}
                   {p.link && (
-                    <a href={p.link} target="_blank" rel="noopener noreferrer" className="plr-link" onClick={(e) => e.stopPropagation()} title="Open problem">
+                    <a
+                      href={p.link}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="plr-link"
+                      onClick={(e) => e.stopPropagation()}
+                      title="Open problem"
+                    >
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
                         <polyline points="15 3 21 3 21 9"/>
@@ -226,10 +337,20 @@ export default function ProblemsView({
                 <span className="plr-topic" title={p.topic}>{p.topic || "—"}</span>
                 <span className="plr-platform">{p.platform || "—"}</span>
                 <span className={`plr-diff ${diffClass}`}>{p.difficulty}</span>
-                <button className={`plr-status pstatus-${p.status}`} onClick={() => cycleStatus(p)} title={`Click to mark as ${statusNext}`}>
+                <button
+                  type="button"
+                  className={`plr-status pstatus-${p.status}`}
+                  onClick={() => cycleStatus(p)}
+                  title={`Click to mark as ${statusNext}`}
+                >
                   {p.status === "solved" ? "Solved" : p.status === "attempted" ? "Attempted" : "Unsolved"}
                 </button>
-                <button className="plr-del" onClick={() => onDelete(p.id)} title="Remove">
+                <button
+                  type="button"
+                  className="plr-del"
+                  onClick={() => onDelete(p.id)}
+                  title="Remove"
+                >
                   {Icons.trash}
                 </button>
               </div>
@@ -244,18 +365,25 @@ export default function ProblemsView({
             </svg>
           </div>
           <h3>No problems yet</h3>
-          <p>Import your .xlsx file to populate this list.</p>
-          <button className="problems-import-btn" onClick={() => fileInputRef.current?.click()}>
+          <p>Import your multi-tab Excel file to populate DSA and SQL questions.</p>
+          <button className="problems-import-btn" type="button" onClick={() => fileInputRef.current?.click()}>
             {Icons.upload} Import XLSX
           </button>
         </div>
       ) : (
         <div className="problems-empty">
-          <h3>No results</h3>
-          <p>Try clearing some filters.</p>
+          <h3>No results found</h3>
+          <p>Try adjusting your search or clearing some filters.</p>
           <button
             className="problems-clear-btn"
-            onClick={() => { setSearch(""); setDiffFilter("all"); setPlatformFilter("all"); setTopicFilter("all"); setStatusTab("all"); }}
+            type="button"
+            onClick={() => {
+              setSearch("");
+              setDiffFilter("all");
+              setPlatformFilter("all");
+              setTopicFilter("all");
+              setStatusTab("all");
+            }}
           >
             Clear all filters
           </button>

@@ -2,7 +2,14 @@ import React, { useState, useMemo, useRef } from "react";
 import "./ProblemsView.css";
 import { Icons } from "../Icons";
 
-export default function ProblemsView({ problems, onImportXlsx, onUpdateStatus, onDelete, onOpenProblem }) {
+export default function ProblemsView({
+  problems,
+  onImportXlsx,
+  onUpdateStatus,
+  onDelete,
+  onClearAll,
+  onOpenProblem,
+}) {
   const fileInputRef = useRef(null);
   const [search, setSearch] = useState("");
   const [diffFilter, setDiffFilter] = useState("all");
@@ -59,10 +66,26 @@ export default function ProblemsView({ problems, onImportXlsx, onUpdateStatus, o
           <h2 className="problems-title">Problems</h2>
           <p className="problems-subtitle">{counts.all} problems imported</p>
         </div>
-        <button className="problems-import-btn" onClick={() => fileInputRef.current?.click()}>
-          {Icons.upload}
-          <span>Import XLSX</span>
-        </button>
+        <div className="problems-head-actions">
+          {counts.all > 0 && onClearAll && (
+            <button
+              className="btn-ghost problems-clear-all-btn"
+              type="button"
+              onClick={onClearAll}
+              title="Remove all imported problems"
+            >
+              {Icons.trash} Clear all
+            </button>
+          )}
+          <button
+            className="problems-import-btn"
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            {Icons.upload}
+            <span>Import XLSX</span>
+          </button>
+        </div>
         <input
           ref={fileInputRef}
           type="file"

@@ -183,3 +183,29 @@ export function ProblemForm({ onSubmit, onCancel }) {
     </form>
   );
 }
+
+// ── ConfirmDialog ─────────────────────────────────
+export function ConfirmDialog({ title, message, confirmLabel = "Delete", onConfirm, onCancel }) {
+  return (
+    <div className="modal-overlay" onClick={onCancel}>
+      <div
+        className="modal-card"
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-label={title}
+      >
+        <h3 className="modal-title">{title}</h3>
+        <p className="modal-message">{message}</p>
+        <div className="modal-actions">
+          <button type="button" className="btn-ghost" onClick={onCancel}>
+            Cancel
+          </button>
+          <button type="button" className="btn-primary modal-confirm-btn" onClick={onConfirm}>
+            {confirmLabel}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}

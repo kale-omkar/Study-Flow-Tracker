@@ -140,3 +140,69 @@
   background: var(--sf-surface-sunken);
   border-color: var(--sf-border-strong);
 }
+
+/* ── Modal & ConfirmDialog ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: rgba(15, 23, 42, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: modalFadeIn 0.15s ease;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.modal-card {
+  width: 100%;
+  max-width: 440px;
+  padding: 28px;
+  background: var(--sf-surface);
+  border-radius: var(--sf-radius-md);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  font-family: var(--sf-font);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  animation: modalSlideUp 0.15s ease;
+}
+
+@keyframes modalSlideUp {
+  from { transform: translateY(6px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+.modal-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--sf-ink);
+}
+
+.modal-message {
+  margin: 0 0 12px;
+  font-size: 0.95rem;
+  color: var(--sf-ink-2);
+  line-height: 1.5;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.modal-confirm-btn {
+  background: var(--sf-red-600) !important;
+}
+
+.modal-confirm-btn:hover {
+  background: var(--sf-red-700) !important;
+}

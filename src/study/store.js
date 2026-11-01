@@ -6,7 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import { createId, getTodayString, addDays, diffInDays } from "../utils";
 import { REVIEW_PHASES } from "../constants";
 
-const KEY = "study-flow-study-v1";
+const KEY = "study-flow-study-v2";
 const MAX_LOG = 4000;
 
 // Typical interview pacing, used as the timer's target.

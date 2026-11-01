@@ -50,6 +50,19 @@
   font-weight: 500;
 }
 
+.problems-head-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.problems-clear-all-btn {
+  color: var(--sf-coral-700) !important;
+}
+.problems-clear-all-btn:hover {
+  background: var(--sf-coral-100) !important;
+}
+
 .problems-import-btn {
   display: inline-flex;
   align-items: center;

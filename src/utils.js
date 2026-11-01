@@ -41,6 +41,14 @@ export const createId = () =>
 // ── Local storage ──────────────────────────────────
 export const loadData = () => {
   if (typeof window === "undefined") return { topics: [], problems: [] };
+  // Automatically clear legacy storage versions to start completely fresh
+  try {
+    window.localStorage.removeItem("study-flow-v2");
+    window.localStorage.removeItem("study-flow-v1");
+    window.localStorage.removeItem("study-flow-study-v1");
+  } catch {
+    /* storage unavailable */
+  }
   const raw = window.localStorage.getItem(STORAGE_KEY);
   if (!raw) return { topics: [], problems: [] };
   try {

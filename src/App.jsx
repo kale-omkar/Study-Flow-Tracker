@@ -21,6 +21,7 @@ import ReviewSession from "./components/Reviewsession.jsx";
 import PracticeTimer from "./components/Practicetimer.jsx";
 import ProblemSheet from "./components/problemsheet.jsx";
 import StudyInsights from "./components/StudyInsights.jsx";
+import { ConfirmDialog } from "./components/Forms.jsx";
 
 import { useStudyStore, buildPool, metaKey } from "./study/store";
 import { ROADMAP, leetcodeUrl, topicNotesFor } from "./study/roadmap";
@@ -426,6 +427,16 @@ export default function App() {
     });
   };
 
+  const requestClearAllGlobalProblems = () => {
+    if (!problems.length) return;
+    setConfirmAction({
+      title: "Remove all problems?",
+      message: `All ${problems.length} imported problems will be removed from your problems list. Topics will not be affected.`,
+      confirmLabel: "Remove all",
+      onConfirm: () => setProblems([]),
+    });
+  };
+
   const navigateToTopic = (topicId) => {
     setSelectedTopicId(topicId);
     setActiveView("topic-detail");
@@ -713,6 +724,7 @@ export default function App() {
             onImportXlsx={handleImportXlsx}
             onUpdateStatus={handleImportedStatus}
             onDelete={requestDeleteGlobalProblem}
+            onClearAll={requestClearAllGlobalProblems}
             onOpenProblem={(p) => setSheetKey(`g:${p.id}`)}
           />
         )}

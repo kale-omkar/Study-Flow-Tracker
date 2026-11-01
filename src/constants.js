@@ -1,5 +1,5 @@
 // ── Constants ──────────────────────────────────────
-export const STORAGE_KEY = "study-flow-v2";
+export const STORAGE_KEY = "study-flow-v3";
 
 export const REVIEW_PHASES = [
   { key: "day1",  label: "Day 1",  offset: 1,  hint: "First recall" },
